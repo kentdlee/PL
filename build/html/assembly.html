@@ -1,0 +1,2610 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3. Assembly Language &#8212; Foundations of Programming Languages Second Edition</title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="4. Object-Oriented Programming" href="oop.html" />
+    <link rel="prev" title="2. Syntax" href="syntax.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="oop.html" title="4. Object-Oriented Programming"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="syntax.html" title="2. Syntax"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Foundations of Programming Languages Second Edition</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3. Assembly Language</a><ul>
+<li><a class="reference internal" href="#overview-of-the-jcoco-vm">3.1. Overview of the JCoCo VM</a></li>
+<li><a class="reference internal" href="#getting-started">3.2. Getting Started</a><ul>
+<li><a class="reference internal" href="#running-the-disassembler">3.2.1. Running the Disassembler</a></li>
+<li><a class="reference internal" href="#running-jcoco">3.2.2. Running JCoCo</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#input-output">3.3. Input/Output</a><ul>
+<li><a class="reference internal" href="#python-i-o">3.3.1. Python I/O</a></li>
+<li><a class="reference internal" href="#coco-i-o">3.3.2. CoCo I/O</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#if-then-else-statements">3.4. If-Then-Else Statements</a><ul>
+<li><a class="reference internal" href="#assembled-coco">3.4.1. Assembled CoCo</a></li>
+<li><a class="reference internal" href="#if-then-statements">3.4.2. If-Then Statements</a></li>
+<li><a class="reference internal" href="#coco-if-then-assembly">3.4.3. CoCo If-Then Assembly</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#while-loops">3.5. While Loops</a></li>
+<li><a class="reference internal" href="#exception-handling">3.6. Exception Handling</a></li>
+<li><a class="reference internal" href="#list-constants">3.7. List Constants</a></li>
+<li><a class="reference internal" href="#calling-a-method">3.8. Calling a Method</a></li>
+<li><a class="reference internal" href="#iterating-over-a-list">3.9. Iterating Over a List</a></li>
+<li><a class="reference internal" href="#range-objects-and-lazy-evaluation">3.10. Range Objects and Lazy Evaluation</a></li>
+<li><a class="reference internal" href="#functions-and-closures">3.11. Functions and Closures</a><ul>
+<li><a class="reference internal" href="#nested-functions-assembly">3.11.1. Nested Functions Assembly</a></li>
+<li><a class="reference internal" href="#nested-function">3.11.2. Nested Function</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#recursion">3.12. Recursion</a><ul>
+<li><a class="reference internal" href="#coco-recursion-assembly">3.12.1. CoCo Recursion Assembly</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#support-for-classes-and-objects">3.13. Support for Classes and Objects</a><ul>
+<li><a class="reference internal" href="#inheritance">3.13.1. Inheritance</a></li>
+<li><a class="reference internal" href="#dynamically-created-classes">3.13.2. Dynamically Created Classes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chapter-summary">3.14. Chapter Summary</a></li>
+<li><a class="reference internal" href="#review-questions">3.15. Review Questions</a></li>
+<li><a class="reference internal" href="#exercises">3.16. Exercises</a></li>
+<li><a class="reference internal" href="#solutions-to-practice-problems">3.17. Solutions to Practice Problems</a><ul>
+<li><a class="reference internal" href="#solution-to-practice-problem-3-1">3.17.1. Solution to Practice Problem 3.1</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-3-2">3.17.2. Solution to Practice Problem 3.2</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-3-3">3.17.3. Solution to Practice Problem 3.3</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-3-4">3.17.4. Solution to Practice Problem 3.4</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-3-5">3.17.5. Solution to Practice Problem 3.5</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-3-6">3.17.6. Solution to Practice Problem 3.6</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-3-7">3.17.7. Solution to Practice Problem 3.7</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-3-8">3.17.8. Solution to Practice Problem 3.8</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-3-9">3.17.9. Solution to Practice Problem 3.9</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-3-10">3.17.10. Solution to Practice Problem 3.10</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-3-11">3.17.11. Solution to Practice Problem 3.11</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-3-12">3.17.12. Solution to Practice Problem 3.12</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="syntax.html"
+                        title="previous chapter">2. Syntax</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="oop.html"
+                        title="next chapter">4. Object-Oriented Programming</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/assembly.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="assembly-language">
+<span id="assemblychap"></span><h1>3. Assembly Language<a class="headerlink" href="#assembly-language" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview-of-the-jcoco-vm">
+<h2>3.1. Overview of the JCoCo VM<a class="headerlink" href="#overview-of-the-jcoco-vm" title="Permalink to this headline">¶</a></h2>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure" id="cocofig">
+<img alt="_images/coco.png" src="_images/coco.png" />
+</div>
+</div></blockquote>
+<p><strong>Fig 3.1</strong> The JCoCo Virtual Machine</p>
+</div>
+</div>
+<div class="section" id="getting-started">
+<h2>3.2. Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="running-the-disassembler">
+<span id="runningdis"></span><h3>3.2.1. Running the Disassembler<a class="headerlink" href="#running-the-disassembler" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">disassembler</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">x</span><span class="o">=</span><span class="mi">5</span>
+    <span class="n">y</span><span class="o">=</span><span class="mi">6</span>
+    <span class="n">z</span><span class="o">=</span><span class="n">x</span><span class="o">+</span><span class="n">y</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+  <span class="n">main</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+  <span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div></blockquote>
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22</pre></div></td><td class="code"><div class="highlight"><pre><span></span>MyComputer&gt; python3.2 addtwo.py 1
+Function: main/0
+Constants: None, 5, 6
+Locals: x, y, z
+Globals: print
+BEGIN
+          LOAD_CONST                     1
+          STORE_FAST                     0
+          LOAD_CONST                     2
+          STORE_FAST                     1
+          LOAD_FAST                      0
+          LOAD_FAST                      1
+          BINARY_ADD
+          STORE_FAST                     2
+          LOAD_GLOBAL                    0
+          LOAD_FAST                      2
+          CALL_FUNCTION                  1
+          POP_TOP
+          LOAD_CONST                     0
+          RETURN_VALUE
+END
+MyComputer&gt; python3.2 addtwo.py 1 &gt; addtwo.casm
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="running-jcoco">
+<span id="runningcoco"></span><h3>3.2.2. Running JCoCo<a class="headerlink" href="#running-jcoco" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26</pre></div></td><td class="code"><div class="highlight"><pre><span></span>MyComputer&gt; coco -v addtwo.casm
+Function: main/0
+Constants: None, 5, 6
+Locals: x, y, z
+Globals: print
+BEGIN
+          LOAD_CONST                     1
+          STORE_FAST                     0
+          LOAD_CONST                     2
+          STORE_FAST                     1
+          LOAD_FAST                      0
+          LOAD_FAST                      1
+          BINARY_ADD
+          STORE_FAST                     2
+          LOAD_GLOBAL                    0
+          LOAD_FAST                      2
+          CALL_FUNCTION                  1
+          POP_TOP
+          LOAD_CONST                     0
+          RETURN_VALUE
+END
+
+11
+MyComputer&gt; coco addtwo.casm
+11
+MyComputer&gt;
+</pre></div>
+</td></tr></table></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>MyComputer&gt; python3.2 addtwo.py 1 &gt; addtwo.casm
+MyComputer&gt; coco addtwo.casm
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="input-output">
+<h2>3.3. Input/Output<a class="headerlink" href="#input-output" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="python-i-o">
+<span id="pythonio"></span><h3>3.3.1. Python I/O<a class="headerlink" href="#python-i-o" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">disassembler</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Enter your name: &quot;</span><span class="p">)</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Enter your age: &quot;</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;, a year from now you will be&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;years old.&quot;</span><span class="p">)</span>
+
+<span class="c1">#main()</span>
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="coco-i-o">
+<span id="cocoio"></span><h3>3.3.2. CoCo I/O<a class="headerlink" href="#coco-i-o" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None,
+  &quot;Enter your name: &quot;, &quot;Enter your age: &quot;,
+  &quot;, a year from now you will be&quot;,
+  1, &quot;years old.&quot;
+Locals: name, age
+Globals: input, int, print
+BEGIN
+          LOAD_GLOBAL                    0
+          LOAD_CONST                     1
+          CALL_FUNCTION                  1
+          STORE_FAST                     0
+          LOAD_GLOBAL                    1
+          LOAD_GLOBAL                    0
+          LOAD_CONST                     2
+          CALL_FUNCTION                  1
+          CALL_FUNCTION                  1
+          STORE_FAST                     1
+          LOAD_GLOBAL                    2
+          LOAD_FAST                      0
+          LOAD_CONST                     3
+          BINARY_ADD
+          LOAD_FAST                      1
+          LOAD_CONST                     4
+          BINARY_ADD
+          LOAD_CONST                     5
+          CALL_FUNCTION                  3
+          POP_TOP
+          LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.2</strong> JCoCo I/O</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 3.1</strong></p>
+<p>The code in <a class="reference internal" href="#cocoio"><span class="std std-ref">CoCo I/O</span></a> is a bit wasteful which often happens when compiling a program written in a higher level language. Optimize the code in <a class="reference internal" href="#cocoio"><span class="std std-ref">CoCo I/O</span></a> so it contains fewer instructions.</p>
+<p><a class="reference internal" href="#exercise3-1"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+</div>
+<div class="section" id="if-then-else-statements">
+<span id="ifthenelsecode"></span><h2>3.4. If-Then-Else Statements<a class="headerlink" href="#if-then-else-statements" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">disassembler</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">y</span><span class="p">:</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">y</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None, 5, 6
+Locals: x, y, z
+Globals: print
+BEGIN
+          LOAD_CONST                     1
+          STORE_FAST                     0
+          LOAD_CONST                     2
+          STORE_FAST                     1
+          LOAD_FAST                      0
+          LOAD_FAST                      1
+          COMPARE_OP                     4
+          POP_JUMP_IF_FALSE        label00
+          LOAD_FAST                      0
+          STORE_FAST                     2
+          JUMP_FORWARD             label01
+label00:  LOAD_FAST                      1
+          STORE_FAST                     2
+label01:  LOAD_GLOBAL                    0
+          LOAD_FAST                      2
+          CALL_FUNCTION                  1
+          POP_TOP
+          LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.3</strong> If-Then-Else assembly</p>
+</div>
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span>  onelabel:  LOAD_FAST                     1
+             STORE_FAST                    2
+  twolabel:
+threelabel: LOAD_GLOBAL                    0
+</pre></div>
+</td></tr></table></div>
+<div class="section" id="assembled-coco">
+<span id="cocoassembled"></span><h3>3.4.1. Assembled CoCo<a class="headerlink" href="#assembled-coco" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None, 5, 6
+Locals: x, y, z
+Globals: print
+BEGIN
+          LOAD_CONST                     1
+          STORE_FAST                     0
+          LOAD_CONST                     2
+          STORE_FAST                     1
+          LOAD_FAST                      0
+          LOAD_FAST                      1
+          COMPARE_OP                     4
+          POP_JUMP_IF_FALSE             11
+          LOAD_FAST                      0
+          STORE_FAST                     2
+          JUMP_FORWARD                  13
+          LOAD_FAST                      1
+          STORE_FAST                     2
+          LOAD_GLOBAL                    0
+          LOAD_FAST                      2
+          CALL_FUNCTION                  1
+          POP_TOP
+          LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.4</strong> Assembled code</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 3.2</strong></p>
+<p>Without touching the code that compares the two values, the assembly in <a class="reference internal" href="#cocoassembled"><span class="std std-ref">Assembled CoCo</span></a> can be optimized to remove at least three instructions. Rewrite the code to remove at least three instructions from this code. With a little more work, five instructions could be removed.</p>
+<p><a class="reference internal" href="#exercise3-2"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+<div class="section" id="if-then-statements">
+<h3>3.4.2. If-Then Statements<a class="headerlink" href="#if-then-statements" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">disassembler</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">y</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="coco-if-then-assembly">
+<span id="cocoifthenasm"></span><h3>3.4.3. CoCo If-Then Assembly<a class="headerlink" href="#coco-if-then-assembly" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None, 5, 6
+Locals: x, y
+Globals: print
+BEGIN
+          LOAD_CONST                     1
+          STORE_FAST                     0
+          LOAD_CONST                     2
+          STORE_FAST                     1
+          LOAD_FAST                      0
+          LOAD_FAST                      1
+          COMPARE_OP                     4
+          POP_JUMP_IF_FALSE        label00
+          LOAD_GLOBAL                    0
+          LOAD_FAST                      0
+          CALL_FUNCTION                  1
+          POP_TOP
+          JUMP_FORWARD             label00
+label00:  LOAD_GLOBAL                    0
+          LOAD_FAST                      1
+          CALL_FUNCTION                  1
+          POP_TOP
+          LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.5</strong> If-Then assembly</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 3.3</strong></p>
+<p>Rewrite the code in <a class="reference internal" href="#cocoifthenasm"><span class="std std-ref">CoCo If-Then Assembly</span></a> so it executes with the same result using <em>POP_JUMP_IF_TRUE</em> instead of the jump if false instruction. Be sure to optimize your code when you write it so there are no unnecessary instructions.</p>
+<p><a class="reference internal" href="#exercise3-3"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+</div>
+<div class="section" id="while-loops">
+<span id="whileloops"></span><h2>3.5. While Loops<a class="headerlink" href="#while-loops" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">disassembler</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">j</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="n">i</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">tmp</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Fibonacci(&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;) is&quot;</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None, 8, 1, &quot;Fibonacci(&quot;, &quot;) is&quot;
+Locals: f, i, j, n, tmp
+Globals: print, str
+BEGIN
+          LOAD_CONST                     1
+          STORE_FAST                     0
+          LOAD_CONST                     2
+          STORE_FAST                     1
+          LOAD_CONST                     2
+          STORE_FAST                     2
+          LOAD_CONST                     2
+          STORE_FAST                     3
+          SETUP_LOOP               label02
+label00:  LOAD_FAST                      3
+          LOAD_FAST                      0
+          COMPARE_OP                     0
+          POP_JUMP_IF_FALSE        label01
+          LOAD_FAST                      3
+          LOAD_CONST                     2
+          BINARY_ADD
+          STORE_FAST                     3
+          LOAD_FAST                      2
+          STORE_FAST                     4
+          LOAD_FAST                      2
+          LOAD_FAST                      1
+          BINARY_ADD
+          STORE_FAST                     2
+          LOAD_FAST                      4
+          STORE_FAST                     1
+          JUMP_ABSOLUTE            label00
+label01:  POP_BLOCK
+label02:  LOAD_GLOBAL                    0
+          LOAD_CONST                     3
+          LOAD_GLOBAL                    1
+          LOAD_FAST                      3
+          CALL_FUNCTION                  1
+          BINARY_ADD
+          LOAD_CONST                     4
+          BINARY_ADD
+          LOAD_FAST                      1
+          CALL_FUNCTION                  2
+          POP_TOP
+          LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.6</strong> While loop assembly</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 3.4</strong></p>
+<p>Write a short program that tests the use of the <em>BREAK_LOOP</em> instruction. You don’t have to write a while loop to test this. Simply write some code that uses a <em>BREAK_LOOP</em> and prints something to the screen to verify that it worked.</p>
+<p><a class="reference internal" href="#exercise3-4"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+<div class="section" id="exception-handling">
+<h2>3.6. Exception Handling<a class="headerlink" href="#exception-handling" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">disassembler</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Enter a number: &quot;</span><span class="p">))</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Enter a number: &quot;</span><span class="p">))</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">x</span> <span class="o">/</span> <span class="n">y</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="s2">&quot;/&quot;</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="s2">&quot;=&quot;</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None,
+    &quot;Enter a number: &quot;, &quot;/&quot;, &quot;=&quot;
+Locals: x, y, z, ex
+Globals: float, input, print, Exception
+BEGIN
+          SETUP_EXCEPT             label00
+          LOAD_GLOBAL                    0
+          LOAD_GLOBAL                    1
+          LOAD_CONST                     1
+          CALL_FUNCTION                  1
+          CALL_FUNCTION                  1
+          STORE_FAST                     0
+          LOAD_GLOBAL                    0
+          LOAD_GLOBAL                    1
+          LOAD_CONST                     1
+          CALL_FUNCTION                  1
+          CALL_FUNCTION                  1
+          STORE_FAST                     1
+          LOAD_FAST                      0
+          LOAD_FAST                      1
+          BINARY_TRUE_DIVIDE
+          STORE_FAST                     2
+          LOAD_GLOBAL                    2
+          LOAD_FAST                      0
+          LOAD_CONST                     2
+          LOAD_FAST                      1
+          LOAD_CONST                     3
+          LOAD_FAST                      2
+          CALL_FUNCTION                  5
+          POP_TOP
+          POP_BLOCK
+          JUMP_FORWARD             label03
+label00:  DUP_TOP
+          LOAD_GLOBAL                    3
+          COMPARE_OP                    10
+          POP_JUMP_IF_FALSE        label02
+          POP_TOP
+          STORE_FAST                     3
+          POP_TOP
+          SETUP_FINALLY            label01
+          LOAD_GLOBAL                    2
+          LOAD_FAST                      3
+          CALL_FUNCTION                  1
+          POP_TOP
+          POP_BLOCK
+          POP_EXCEPT
+          LOAD_CONST                     0
+label01:  LOAD_CONST                     0
+          STORE_FAST                     3
+          DELETE_FAST                    3
+          END_FINALLY
+          JUMP_FORWARD             label03
+label02:  END_FINALLY
+label03:  LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.7</strong> Exception handling assembly</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 3.5</strong></p>
+<p>Write a short program that tests creating an exception, raising it, and printing the handled exception. Write this as a JCoCo program without using the disassembler.</p>
+<p><a class="reference internal" href="#exercise3-5"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+<div class="section" id="list-constants">
+<h2>3.7. List Constants<a class="headerlink" href="#list-constants" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">disassembler</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">lst</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span><span class="s2">&quot;world&quot;</span><span class="p">]</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None, &quot;hello&quot;, &quot;world&quot;
+Locals: lst
+Globals: print
+BEGIN
+          LOAD_CONST                     1
+          LOAD_CONST                     2
+          BUILD_LIST                     2
+          STORE_FAST                     0
+          LOAD_GLOBAL                    0
+          LOAD_FAST                      0
+          CALL_FUNCTION                  1
+          POP_TOP
+          LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.8</strong> Assembly for building a list</p>
+</div>
+</div>
+<div class="section" id="calling-a-method">
+<span id="methodcall"></span><h2>3.8. Calling a Method<a class="headerlink" href="#calling-a-method" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">disassembler</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Enter a list of integers:&quot;</span><span class="p">)</span>
+    <span class="n">lst</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None, &quot;Enter a list of integers:&quot;
+Locals: s, lst
+Globals: input, split, print
+BEGIN
+          LOAD_GLOBAL                    0
+          LOAD_CONST                     1
+          CALL_FUNCTION                  1
+          STORE_FAST                     0
+          LOAD_FAST                      0
+          LOAD_ATTR                      1
+          CALL_FUNCTION                  0
+          STORE_FAST                     1
+          LOAD_GLOBAL                    2
+          LOAD_FAST                      1
+          CALL_FUNCTION                  1
+          POP_TOP
+          LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.9</strong> Assembly for calling a method</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 3.6</strong></p>
+<p>Normally, if you want to add to numbers together in Python, like 5 and 6, you write 5+6. This corresponds to using the <em>BINARY_ADD</em> instruction in JCoCo which in turn calls the magic method <em>__add__</em> with the method call 5.__add__(6). Write a short JCoCo program where you add two integers together without using the <em>BINARY_ADD</em> instruction. Print the result to the screen.</p>
+<p><a class="reference internal" href="#exercise3-6"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+<div class="section" id="iterating-over-a-list">
+<h2>3.9. Iterating Over a List<a class="headerlink" href="#iterating-over-a-list" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">disassembler</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Enter a list: &quot;</span><span class="p">)</span>
+    <span class="n">lst</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+<span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None, &quot;Enter a list: &quot;
+Locals: x, lst, b
+Globals: input, split, print
+BEGIN
+          LOAD_GLOBAL                    0
+          LOAD_CONST                     1
+          CALL_FUNCTION                  1
+          STORE_FAST                     0
+          LOAD_FAST                      0
+          LOAD_ATTR                      1
+          CALL_FUNCTION                  0
+          STORE_FAST                     1
+          SETUP_LOOP               label02
+          LOAD_FAST                      1
+          GET_ITER
+label00:  FOR_ITER                 label01
+          STORE_FAST                     2
+          LOAD_GLOBAL                    2
+          LOAD_FAST                      2
+          CALL_FUNCTION                  1
+          POP_TOP
+          JUMP_ABSOLUTE            label00
+label01:  POP_BLOCK
+label02:  LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.10</strong> List iteration assembly</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 3.7</strong></p>
+<p>Write a JCoCo program that gets a string from the user and iterates over the characters of the string, printing them to the screen.</p>
+<p><a class="reference internal" href="#exercise3-7"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+<div class="section" id="range-objects-and-lazy-evaluation">
+<span id="lazyeval"></span><h2>3.10. Range Objects and Lazy Evaluation<a class="headerlink" href="#range-objects-and-lazy-evaluation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">disassembler</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Enter a list: &quot;</span><span class="p">)</span>
+    <span class="n">lst</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+<span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None, &quot;Enter a list: &quot;, 1, -1, -1
+Locals: x, lst, i
+Globals: input, split, range, len, print
+BEGIN
+          LOAD_GLOBAL                    0
+          LOAD_CONST                     1
+          CALL_FUNCTION                  1
+          STORE_FAST                     0
+          LOAD_FAST                      0
+          LOAD_ATTR                      1
+          CALL_FUNCTION                  0
+          STORE_FAST                     1
+          SETUP_LOOP               label02
+          LOAD_GLOBAL                    2
+          LOAD_GLOBAL                    3
+          LOAD_FAST                      1
+          CALL_FUNCTION                  1
+          LOAD_CONST                     2
+          BINARY_SUBTRACT
+          LOAD_CONST                     3
+          LOAD_CONST                     4
+          CALL_FUNCTION                  3
+          GET_ITER
+label00:  FOR_ITER                 label01
+          STORE_FAST                     2
+          LOAD_GLOBAL                    4
+          LOAD_FAST                      1
+          LOAD_FAST                      2
+          BINARY_SUBSCR
+          CALL_FUNCTION                  1
+          POP_TOP
+          JUMP_ABSOLUTE            label00
+label01:  POP_BLOCK
+label02:  LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.11</strong> Range assembly</p>
+</div>
+</div>
+<div class="section" id="functions-and-closures">
+<span id="closures"></span><h2>3.11. Functions and Closures<a class="headerlink" href="#functions-and-closures" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="mi">10</span>
+  <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">g</span><span class="p">():</span>
+      <span class="k">return</span> <span class="n">x</span>
+    <span class="k">return</span> <span class="n">g</span>
+  <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="mi">3</span><span class="p">)())</span>
+<span class="c1">#main()</span>
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="section" id="nested-functions-assembly">
+<span id="nested-fun"></span><h3>3.11.1. Nested Functions Assembly<a class="headerlink" href="#nested-functions-assembly" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Function: main/0
+    Function: f/1
+        Function: g/0
+        Constants: None
+        FreeVars: x
+        BEGIN
+                  LOAD_DEREF    0
+                  RETURN_VALUE
+        END
+    Constants: None, code(g)
+    Locals: x, g
+    CellVars: x
+    BEGIN
+              LOAD_CLOSURE      0
+              BUILD_TUPLE       1
+              LOAD_CONST        1
+              MAKE_CLOSURE      0
+              STORE_FAST        1
+              LOAD_FAST         1
+              RETURN_VALUE
+    END
+Constants: None, 10, code(f), 3
+Locals: x, f
+Globals: print
+BEGIN
+          LOAD_CONST            1
+          STORE_FAST            0
+          LOAD_CONST            2
+          MAKE_FUNCTION         0
+          STORE_FAST            1
+          LOAD_GLOBAL           0
+          LOAD_FAST             1
+          LOAD_CONST            3
+          CALL_FUNCTION         1
+          CALL_FUNCTION         0
+          CALL_FUNCTION         1
+          POP_TOP
+          LOAD_CONST            0
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.12</strong> Nested functions assembly</p>
+</div>
+</div>
+<div class="section" id="nested-function">
+<span id="nestedfig"></span><h3>3.11.2. Nested Function<a class="headerlink" href="#nested-function" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure">
+<img alt="_images/nested.png" src="_images/nested.png" />
+</div>
+</div></blockquote>
+<p><strong>Fig 3.13</strong> Execution of nested.casm</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 3.8</strong></p>
+<p>The program in <a class="reference internal" href="#nested-fun"><span class="std std-ref">Nested Functions Assembly</span></a> would work just fine without the cell. The variable <em>x</em> could refer directly to the 3 in both the <em>f</em> and <em>g</em> functions without any ramifications. Yet, a cell variable is needed in some circumstances. Can you come up with an example where a cell variable is absolutely needed?</p>
+<p><a class="reference internal" href="#exercise3-8"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+</div>
+<div class="section" id="recursion">
+<span id="id1"></span><h2>3.12. Recursion<a class="headerlink" href="#recursion" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">disassembler</span>
+
+<span class="k">def</span> <span class="nf">factorial</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">n</span><span class="o">*</span><span class="n">factorial</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">factorial</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">factorial</span><span class="p">)</span>
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="section" id="coco-recursion-assembly">
+<span id="cocorecursion"></span><h3>3.12.1. CoCo Recursion Assembly<a class="headerlink" href="#coco-recursion-assembly" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Function: factorial/1
+Constants: None, 0, 1
+Locals: n
+Globals: factorial
+BEGIN
+          LOAD_FAST                      0
+          LOAD_CONST                     1
+          COMPARE_OP                     2
+          POP_JUMP_IF_FALSE        label00
+          LOAD_CONST                     2
+          RETURN_VALUE
+label00:  LOAD_FAST                      0
+          LOAD_GLOBAL                    0
+          LOAD_FAST                      0
+          LOAD_CONST                     2
+          BINARY_SUBTRACT
+          CALL_FUNCTION                  1
+          BINARY_MULTIPLY
+          RETURN_VALUE
+END
+Function: main/0
+Constants: None, 5
+Globals: print, factorial
+BEGIN
+          LOAD_GLOBAL                    0
+          LOAD_GLOBAL                    1
+          LOAD_CONST                     1
+          CALL_FUNCTION                  1
+          CALL_FUNCTION                  1
+          POP_TOP
+          LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.14</strong> Recursion assembly</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 3.9</strong></p>
+<p>Draw a picture of the run-time stack just before the instruction on line 11 of <a class="reference internal" href="#cocorecursion"><span class="std std-ref">CoCo Recursion Assembly</span></a> is executed. Use <a class="reference internal" href="#nestedfig"><span class="std std-ref">Nested Function</span></a> as a guide to how you draw this picture. Be sure to include the code, the values of <em>n</em>, and the <em>PC</em> values.</p>
+<p><a class="reference internal" href="#exercise3-9"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+</div>
+<div class="section" id="support-for-classes-and-objects">
+<span id="classesasm"></span><h2>3.13. Support for Classes and Objects<a class="headerlink" href="#support-for-classes-and-objects" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">disassembler</span>
+<span class="k">class</span> <span class="nc">Dog</span><span class="p">:</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">food</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="k">def</span> <span class="nf">eat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">food</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">food</span> <span class="o">+</span> <span class="mi">1</span>
+  <span class="k">def</span> <span class="nf">speak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">food</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+      <span class="k">print</span><span class="p">(</span><span class="s2">&quot;I am happy!&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">print</span><span class="p">(</span><span class="s2">&quot;I am hungry!!!&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">food</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">food</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+  <span class="n">mesa</span>  <span class="o">=</span> <span class="n">Dog</span><span class="p">()</span>
+  <span class="n">mesa</span><span class="o">.</span><span class="n">eat</span><span class="p">()</span>
+  <span class="n">mesa</span><span class="o">.</span><span class="n">speak</span><span class="p">()</span>
+  <span class="n">mesa</span><span class="o">.</span><span class="n">eat</span><span class="p">()</span>
+  <span class="n">mesa</span><span class="o">.</span><span class="n">eat</span><span class="p">()</span>
+  <span class="n">mesa</span><span class="o">.</span><span class="n">speak</span><span class="p">()</span>
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">Dog</span><span class="p">)</span>
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Class: Dog
+BEGIN
+   Function: eat/1
+   Constants: None, 1
+   Locals: self
+   Globals: food
+   BEGIN
+             LOAD_FAST     0
+             LOAD_ATTR     0
+             LOAD_CONST    1
+             BINARY_ADD
+             LOAD_FAST     0
+             STORE_ATTR    0
+             LOAD_CONST    0
+             RETURN_VALUE
+   END
+   Function: __init__/1
+   Constants: None, 0
+   Locals: self
+   Globals: food
+   BEGIN
+             LOAD_CONST  1
+             LOAD_FAST   0
+             STORE_ATTR  0
+             LOAD_CONST  0
+             RETURN_VALUE
+   END
+   # speak function omitted
+END
+Function: main/0
+Constants: None
+Locals: mesa
+Globals: Dog, eat, speak
+BEGIN
+          LOAD_GLOBAL   0
+          CALL_FUNCTION 0
+          STORE_FAST    0
+          LOAD_FAST     0
+          LOAD_ATTR     1
+          CALL_FUNCTION 0
+          POP_TOP
+          ...
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.15</strong> The dog class</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 3.10</strong></p>
+<p>In this section it was stated that every object consists of a dictionary which holds the attributes of the object. What is stored in the dictioinary of the object that mesa refers to in this section?</p>
+<p><a class="reference internal" href="#exercise3-10"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+<div class="section" id="inheritance">
+<h3>3.13.1. Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">disassembler</span>
+<span class="k">class</span> <span class="nc">Dog</span><span class="p">:</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">food</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="k">def</span> <span class="nf">eat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">food</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">food</span> <span class="o">+</span> <span class="mi">1</span>
+  <span class="k">def</span> <span class="nf">speak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">food</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+      <span class="k">print</span><span class="p">(</span><span class="s2">&quot;I am happy!&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">print</span><span class="p">(</span><span class="s2">&quot;I am hungry!!!&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">food</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">food</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+  <span class="n">mesa</span>  <span class="o">=</span> <span class="n">Dog</span><span class="p">()</span>
+  <span class="n">mesa</span><span class="o">.</span><span class="n">eat</span><span class="p">()</span>
+  <span class="n">mesa</span><span class="o">.</span><span class="n">speak</span><span class="p">()</span>
+  <span class="n">mesa</span><span class="o">.</span><span class="n">eat</span><span class="p">()</span>
+  <span class="n">mesa</span><span class="o">.</span><span class="n">eat</span><span class="p">()</span>
+  <span class="n">mesa</span><span class="o">.</span><span class="n">speak</span><span class="p">()</span>
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">Dog</span><span class="p">)</span>
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Class: Animal
+BEGIN
+    Function: __init__/2
+    Constants: None, 0
+    Locals: self, name
+    Globals: name, food
+    BEGIN
+              LOAD_FAST   1
+              LOAD_FAST   0
+              STORE_ATTR  0
+              LOAD_CONST  1
+              LOAD_FAST   0
+              STORE_ATTR  1
+              LOAD_CONST  0
+              RETURN_VALUE
+    END
+    Function: eat/1
+    Constants: None, 1
+    Locals: self
+    Globals: food
+    BEGIN
+              LOAD_FAST  0
+              ...
+              RETURN_VALUE
+    END
+    Function: speak/1
+    Constants: None, &quot;is an animal&quot;
+    Locals: self
+    Globals: print, name
+    BEGIN
+              LOAD_GLOBAL  0
+              ...
+              RETURN_VALUE
+    END
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.16</strong> Inheritance in JCoCo - part 1</p>
+</div>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Class: Dog(Animal)
+BEGIN
+    Function: __init__/2
+    Constants: None
+    Locals: self, name
+    FreeVars: __class__
+    Globals: super, __init__
+    BEGIN
+              LOAD_GLOBAL                    0
+              CALL_FUNCTION                  0
+              LOAD_ATTR                      1
+              LOAD_FAST                      1
+              CALL_FUNCTION                  1
+              POP_TOP
+              LOAD_CONST                     0
+              RETURN_VALUE
+    END
+    Function: speak/1
+    Constants: None, &quot;says woof!&quot;
+    Locals: self
+    Globals: print, name
+    BEGIN
+              LOAD_GLOBAL                    0
+              ...
+              RETURN_VALUE
+    END
+END
+Function: main/0
+Constants: None, &quot;Mesa&quot;
+Locals: mesa
+Globals: Dog, eat, speak
+BEGIN
+          LOAD_GLOBAL                    0
+          LOAD_CONST                     1
+          CALL_FUNCTION                  1
+          STORE_FAST                     0
+          ...
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.17</strong> Inheritance in JCoCo - part 2</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 3.11</strong></p>
+<p>Code was omitted in figures 3.16 and 3.17 for brevity in the chapter. Pick a method and complete the assembly code according to the original Python code from which it is derived.</p>
+<p><a class="reference internal" href="#exercise3-11"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+<div class="section" id="dynamically-created-classes">
+<h3>3.13.2. Dynamically Created Classes<a class="headerlink" href="#dynamically-created-classes" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">disassembler</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+
+  <span class="k">class</span> <span class="nc">Dog</span><span class="p">:</span>
+    <span class="n">dogNumber</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">Dog</span><span class="o">.</span><span class="n">dogNumber</span>
+      <span class="n">Dog</span><span class="o">.</span><span class="n">dogNumber</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">speak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+      <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Dog number: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+  <span class="n">x</span> <span class="o">=</span> <span class="n">Dog</span><span class="p">(</span><span class="s2">&quot;Mesa&quot;</span><span class="p">)</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="n">Dog</span><span class="p">(</span><span class="s2">&quot;Sequoia&quot;</span><span class="p">)</span>
+
+  <span class="n">x</span><span class="o">.</span><span class="n">speak</span><span class="p">()</span>
+  <span class="n">y</span><span class="o">.</span><span class="n">speak</span><span class="p">()</span>
+
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Function: main/0
+    Function: Dog/1
+        Function: __init__/2
+        Constants: None, 1
+        Locals: self, name
+        FreeVars: Dog
+        Globals: name, dogNumber, id
+        BEGIN
+                  LOAD_FAST                      1
+                  LOAD_FAST                      0
+                  STORE_ATTR                     0
+                  LOAD_DEREF                     0
+                  LOAD_ATTR                      1
+                  LOAD_FAST                      0
+                  STORE_ATTR                     2
+                  ...
+                  RETURN_VALUE
+        END
+        Function: speak/1
+        Constants: None, &quot;Dog number: &quot;
+        Locals: self
+        Globals: print, id
+        BEGIN
+                  LOAD_GLOBAL                    0
+                  ...
+                  RETURN_VALUE
+        END
+    Constants: 0, code(__init__), code(speak), None
+    Locals: __locals__
+    FreeVars: Dog
+    Globals: __name__, __module__, dogNumber, __init__, speak
+    BEGIN
+              LOAD_FAST                      0
+              STORE_LOCALS
+              LOAD_NAME                      0
+              STORE_NAME                     1
+              LOAD_CONST                     0
+              STORE_NAME                     2
+              LOAD_CLOSURE                   0
+              BUILD_TUPLE                    1
+              LOAD_CONST                     1
+              MAKE_CLOSURE                   0
+              STORE_NAME                     3
+              LOAD_CONST                     2
+              MAKE_FUNCTION                  0
+              STORE_NAME                     4
+              LOAD_CONST                     3
+              RETURN_VALUE
+    END
+
+  Constants: None, code(Dog), &quot;Dog&quot;, &quot;Mesa&quot;, &quot;Sequoia&quot;
+  Locals: x, y
+  CellVars: Dog
+  Globals: speak
+  BEGIN
+            LOAD_BUILD_CLASS
+            LOAD_CLOSURE                   0
+            BUILD_TUPLE                    1
+            LOAD_CONST                     1
+            MAKE_CLOSURE                   0
+            LOAD_CONST                     2
+            CALL_FUNCTION                  2
+            STORE_DEREF                    0
+            LOAD_DEREF                     0
+            LOAD_CONST                     3
+            CALL_FUNCTION                  1
+            STORE_FAST                     0
+            ...
+            RETURN_VALUE
+  END
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig 3.18 and Fig 3.19</strong> Dynamically created class</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 3.12</strong></p>
+<p>In some detail, describe the contents of the operand stack before and after the built-in class builder function is called to create a class instance.</p>
+<p><a class="reference internal" href="#exercise3-12"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+</div>
+<div class="section" id="chapter-summary">
+<h2>3.14. Chapter Summary<a class="headerlink" href="#chapter-summary" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="review-questions">
+<h2>3.15. Review Questions<a class="headerlink" href="#review-questions" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ol class="arabic simple">
+<li>How do the Python virtual machine and JCoCo differ? Name three differences between the two implementations.</li>
+<li>What is a disassembler?</li>
+<li>What is an assembler?</li>
+<li>What is a stack frame? Where are they stored? What goes inside a stack frame?</li>
+<li>What is the purpose of the block stack and where is it stored?</li>
+<li>What is the purpose of the Program Counter?</li>
+<li>Name an instruction that is responsible for creating a list object and describe how it works.</li>
+<li>Describe the execution of the <em>STORE_FAST</em> and <em>LOAD_FAST</em> instructions.</li>
+<li>How can JCoCo read a line of input from the keyboard?</li>
+<li>What is the difference between a disassembled Python program and an assembled JCoCo program? Provide a short example and point out the differences.</li>
+<li>When a Python while loop is implemented in JCoCo, what is the last instruction of the loop and what is its purpose?</li>
+<li>What do exception handling and loops have in common in the JCoCo implementation?</li>
+<li>What is lazy evaluation and why is it important to Python and JCoCo?</li>
+<li>What is a closure and why are closures needed?</li>
+<li>How do you create an instance of a class in JCoCo? What instructions must be executed to create objects?</li>
+<li>Write a class, using JCoCo, and create some instances of the class.</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="exercises">
+<h2>3.16. Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first">Consulting the JCoCo assembly language program in <a class="reference internal" href="#exercise3-2"><span class="std std-ref">the solution to exercise 3.2</span></a>, provide the contents of the operand stack after each instruction is executed.</p>
+</li>
+<li><p class="first">Write a JCoCo program which reads an integer from the user and then creates a list of all the even numbers from 0 up to and including that integer. The program should conclude printing the list to the screen. Test your program with JCoCo to be sure it works.</p>
+</li>
+<li><p class="first">With as few instructions as possible add some exception handling to the previous exercise to print “You didn’t enter an integer!” if the user fails to enter an integer in their program.</p>
+</li>
+<li><p class="first">In as few instructions as possible write a JCoCo program that computes the sum of the  rst n integers where the non-negative n is read from the user.</p>
+</li>
+<li><p class="first">Write a recursive JCoCo program that adds up the  rst n integers where n is read from the user. Re- member, there must be a base case that comes  rst in this function and the recursive case must be called on something smaller which is used in computing the solution to the whole problem.</p>
+</li>
+<li><p class="first">Write a Rational class that can be used to add and multiply fractions together. A Rational number has an integer numerator and denominator. The __add__ method is needed to add together Rationals. The __mul__ method is for multiplication. To get fractions in reduced format you may want to find the greatest common divisor of the numerator and the denominator when creating a Rational number. Write this code in Python first, then disassemble it to get started with this assignment.</p>
+<p>You may wish to write the greatest common divisor function, gcd, as part of the class although no self parameter is needed for this function. The greatest common divisor of two integers, 𝑥 and 𝑦, can be defined recursively. If 𝑦 is zero then 𝑥 is the greatest common divisor. Otherwise, the greatest common divisor of 𝑥 and 𝑦 is equal to the greatest common divisor of 𝑦 and the remainder 𝑥 divided by 𝑦. Write a recursive function called gcd to determine the greatest common divisor of 𝑥 and 𝑦.</p>
+<p>Disassemble the program and then look for ways of shortening up the JCoCo assembly language program. Use the following main program in your code.</p>
+<blockquote>
+<div><div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span>import disassembler
+def main ():
+x = Rational(1,2)
+y = Rational(2,3)
+print(x+y)
+print(x*y)
+disassembler.disassemble(Rational)
+disassembler.disassemble(main)
+</pre></div>
+</td></tr></table></div>
+</div></blockquote>
+<p>From this code you should get the following output which matches the output you should get had this been a Python program. Remember to use Python 3.2 when disassembling your program. And, remember to turn in as short a program as possible while getting this output below from the main program given above.</p>
+<blockquote>
+<div><div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span>7/6 1/3
+</pre></div>
+</td></tr></table></div>
+</div></blockquote>
+</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="solutions-to-practice-problems">
+<h2>3.17. Solutions to Practice Problems<a class="headerlink" href="#solutions-to-practice-problems" title="Permalink to this headline">¶</a></h2>
+<p>These are solutions to the practice problems. You should only consult these answers after you have tried each of them for yourself first. Practice problems are meant to help reinforce the material you have just read so make use of them.</p>
+<div class="section" id="solution-to-practice-problem-3-1">
+<span id="exercise3-1"></span><h3>3.17.1. Solution to Practice Problem 3.1<a class="headerlink" href="#solution-to-practice-problem-3-1" title="Permalink to this headline">¶</a></h3>
+<p>The assembly code in <a class="reference internal" href="#cocoio"><span class="std std-ref">CoCo I/O</span></a> blindly pops the <em>None</em> at the end and then pushes <em>None</em> again before returning from main. This can be eliminated resulting in two fewer instructions. This would also mean that <em>None</em> is not needed in the constants, but this was not eliminated below.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None,
+    &quot;Enter your name: &quot;, &quot;Enter your age: &quot;,
+    &quot;, a year from now you will be&quot;,
+    1, &quot;years old.&quot;
+Locals: name, age
+Globals: input, int, print
+BEGIN
+          LOAD_GLOBAL                    0
+          LOAD_CONST                     1
+          CALL_FUNCTION                  1
+          STORE_FAST                     0
+          LOAD_GLOBAL                    1
+          LOAD_GLOBAL                    0
+          LOAD_CONST                     2
+          CALL_FUNCTION                  1
+          CALL_FUNCTION                  1
+          STORE_FAST                     1
+          LOAD_GLOBAL                    2
+          LOAD_FAST                      0
+          LOAD_CONST                     3
+          BINARY_ADD
+          LOAD_FAST                      1
+          LOAD_CONST                     4
+          BINARY_ADD
+          LOAD_CONST                     5
+          CALL_FUNCTION                  3
+          RETURN_VALUE
+END
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-3-2">
+<span id="exercise3-2"></span><h3>3.17.2. Solution to Practice Problem 3.2<a class="headerlink" href="#solution-to-practice-problem-3-2" title="Permalink to this headline">¶</a></h3>
+<p>As in practice 3.1 the <em>POP_TOP</em> and <em>LOAD_CONST</em> from the end can be eliminated. In the if-then-else code both the <em>then</em> part and the <em>else</em> part execute exactly the same <em>STORE_FAST</em> instruction. That can be moved after the if-then-else code and written just once, resulting in one less instruction and three less overall. Furthermore, if we move the <em>LOAD_GLOBAL</em> for the call to <em>print</em> before the if-then-else statement, we can avoid storing the maximum value in <em>z</em> at all and just leave the result on the top of the operand stack: either <em>x</em> or <em>y</em>. By leaving the bigger of <em>x</em> or <em>y</em> on the top of the stack, the call to <em>print</em> will print the correct value. This eliminates five instructions from the original code.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None, 5, 6
+Locals: x, y
+Globals: print
+BEGIN
+          LOAD_CONST                     1
+          STORE_FAST                     0
+          LOAD_CONST                     2
+          STORE_FAST                     1
+          LOAD_GLOBAL                    0
+          LOAD_FAST                      0
+          LOAD_FAST                      1
+          COMPARE_OP                     4
+          POP_JUMP_IF_FALSE        label00
+          LOAD_FAST                      0
+          JUMP_FORWARD             label01
+label00:  LOAD_FAST                      1
+label01:  CALL_FUNCTION                  1
+          RETURN_VALUE
+END
+</pre></div>
+</div>
+<p>It is worth noting that the code above is exactly the disassembled code from this Python program.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">disassembler</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">x</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">y</span> <span class="k">else</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="n">disassembler</span><span class="o">.</span><span class="n">disassemble</span><span class="p">(</span><span class="n">main</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When main is called, this code prints the result of a <em>conditional expression</em>. The if-then-else expression inside the print statement is different than an if-then-else statement. An if-then-else statement updates a variable or has some other side-effect. An if-then-else expression, or <em>conditional expression</em> as it is called in Python documentation, yields a value: either the <em>then</em> value or the <em>else</em> value. In the assembly language code we see that the yielded value is passed to the print function as its argument.</p>
+</div>
+<div class="section" id="solution-to-practice-problem-3-3">
+<span id="exercise3-3"></span><h3>3.17.3. Solution to Practice Problem 3.3<a class="headerlink" href="#solution-to-practice-problem-3-3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None, 5, 6
+Locals: x, y
+Globals: print
+BEGIN
+          LOAD_CONST                     1
+          STORE_FAST                     0
+          LOAD_CONST                     2
+          STORE_FAST                     1
+          LOAD_FAST                      0
+          LOAD_FAST                      1
+          COMPARE_OP                     1
+          POP_JUMP_IF_TRUE         label00
+          LOAD_GLOBAL                    0
+          LOAD_FAST                      0
+          CALL_FUNCTION                  1
+          POP_TOP
+label00:  LOAD_GLOBAL                    0
+          LOAD_FAST                      1
+          CALL_FUNCTION                  1
+          RETURN_VALUE
+END
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-3-4">
+<span id="exercise3-4"></span><h3>3.17.4. Solution to Practice Problem 3.4<a class="headerlink" href="#solution-to-practice-problem-3-4" title="Permalink to this headline">¶</a></h3>
+<p>The following code behaves differently if the <em>BREAK_LOOP</em> instruction is removed from the program.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None, 7, 6
+Locals: x, y
+Globals: print
+BEGIN
+          SETUP_LOOP               label01
+          LOAD_CONST                     1
+          STORE_FAST                     0
+          LOAD_CONST                     2
+          STORE_FAST                     1
+          LOAD_FAST                      0
+          LOAD_FAST                      1
+          COMPARE_OP                     1
+          POP_JUMP_IF_TRUE         label00
+          BREAK_LOOP
+          LOAD_GLOBAL                    0
+          LOAD_FAST                      0
+          CALL_FUNCTION                  1
+          POP_TOP
+label00:  POP_BLOCK
+label01:  LOAD_GLOBAL                    0
+          LOAD_FAST                      1
+          CALL_FUNCTION                  1
+          RETURN_VALUE
+END
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-3-5">
+<span id="exercise3-5"></span><h3>3.17.5. Solution to Practice Problem 3.5<a class="headerlink" href="#solution-to-practice-problem-3-5" title="Permalink to this headline">¶</a></h3>
+<p>This is the hello world program with exception handling used to raise and catch an exception. This solution does not include code for <em>finally</em> handling in case an exception happened while handling the exception. It also assumes the exception will match when thrown since JCoCo only supports one type of exception.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None, &quot;Hello World!&quot;
+Locals: ex
+Globals: Exception, print
+BEGIN
+          SETUP_EXCEPT             label00
+          LOAD_GLOBAL                    0
+          LOAD_CONST                     1
+          CALL_FUNCTION                  1
+          RAISE_VARARGS                  1
+          POP_BLOCK
+          JUMP_FORWARD             label01
+label00:  LOAD_GLOBAL                    1
+          ROT_TWO
+          CALL_FUNCTION                  1
+          POP_TOP
+          POP_EXCEPT
+label01:  LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-3-6">
+<span id="exercise3-6"></span><h3>3.17.6. Solution to Practice Problem 3.6<a class="headerlink" href="#solution-to-practice-problem-3-6" title="Permalink to this headline">¶</a></h3>
+<p>This program adds 5 and 6 together using the <em>__add__</em> magic method associated with integer objects. First 5 is loaded onto the operand stack. Then <em>LOAD_ATTR</em> is used to load the <em>__add__</em> of the 5 object onto the stack. This is the function. The argument to <em>__add__</em> is loaded next which is the 6. The 6 is loaded by the <em>LOAD_CONST</em> instruction. Then <em>__add__</em> is called with one argument. The 11 is left on the operand stack after the function call. It is stored in <em>x</em>, the <em>print</em> is loaded, <em>x</em> is loaded onto the operand stack, and <em>print</em> is called to print the value. Since <em>print</em> leaves <em>None</em> on the stack, that value is returned from the main function.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None, 5, 6
+Locals: x
+Globals: __add__, print
+BEGIN
+
+          LOAD_CONST                     1
+          LOAD_ATTR                      0
+          LOAD_CONST                     2
+          CALL_FUNCTION                  1
+          STORE_FAST                     0
+          LOAD_GLOBAL                    1
+          LOAD_FAST                      0
+          CALL_FUNCTION                  1
+          RETURN_VALUE
+END
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-3-7">
+<span id="exercise3-7"></span><h3>3.17.7. Solution to Practice Problem 3.7<a class="headerlink" href="#solution-to-practice-problem-3-7" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Function: main/0
+Constants: None, &quot;Enter a string: &quot;
+Locals: x, a
+Globals: input, print
+BEGIN
+          LOAD_GLOBAL                    0
+          LOAD_CONST                     1
+          CALL_FUNCTION                  1
+          STORE_FAST                     0
+          SETUP_LOOP               label02
+          LOAD_FAST                      0
+          GET_ITER
+label00:  FOR_ITER                 label01
+          STORE_FAST                     1
+          LOAD_GLOBAL                    1
+          LOAD_FAST                      1
+          CALL_FUNCTION                  1
+          POP_TOP
+          JUMP_ABSOLUTE            label00
+label01:  POP_BLOCK
+label02:  LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-3-8">
+<span id="exercise3-8"></span><h3>3.17.8. Solution to Practice Problem 3.8<a class="headerlink" href="#solution-to-practice-problem-3-8" title="Permalink to this headline">¶</a></h3>
+<p>A cell variable is needed if an inner function makes a modification to a variable that is located in the outer function. Consider the JCoCo program below. Without the cell the program below would print 10 to the screen and with the cell it prints 11. Why is that? Draw the run-time stack both ways to see what happens with and without the cell variable.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Function: f/1
+    Function: g/1
+    Constants: None, 1
+    Locals: y
+    FreeVars: x
+    BEGIN
+              LOAD_DEREF                 0
+              LOAD_CONST                 1
+              BINARY_ADD
+              STORE_DEREF                0
+              LOAD_DEREF                 0
+              LOAD_FAST                  0
+              BINARY_ADD
+              RETURN_VALUE
+    END
+Constants: None, code(g)
+Locals: x, g
+CellVars: x
+BEGIN
+          LOAD_CLOSURE                   0
+          BUILD_TUPLE                    1
+          LOAD_CONST                     1
+          MAKE_CLOSURE                   0
+          STORE_FAST                     1
+          LOAD_FAST                      1
+          LOAD_DEREF                     0
+          CALL_FUNCTION                  1
+          LOAD_DEREF                     0
+          BINARY_ADD
+          RETURN_VALUE
+END
+Function: main/0
+Constants: None, 3
+Globals: print, f
+BEGIN
+          LOAD_GLOBAL                    0
+          LOAD_GLOBAL                    1
+          LOAD_CONST                     1
+          CALL_FUNCTION                  1
+          CALL_FUNCTION                  1
+          POP_TOP
+          LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</div>
+<p>Interestingly, this program cannot be written in Python. The closest Python equivalent of this program is given below. However, it is not the equivalent of the program written above. In fact, the program below won’t even execute. There is an error on the line <em>x = x + 1</em>. The problem is that as soon as Python sees <em>x =</em> in the function <em>g</em>, it decides there is another <em>x</em> that is a local variable in <em>g</em>. But, then <em>x = x + 1</em> results in an error because <em>x</em> in <em>g</em> has not yet been assigned a value.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+
+    <span class="k">return</span> <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">x</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-3-9">
+<span id="exercise3-9"></span><h3>3.17.9. Solution to Practice Problem 3.9<a class="headerlink" href="#solution-to-practice-problem-3-9" title="Permalink to this headline">¶</a></h3>
+<p>A couple things to notice in figure 3.20. The run-time stack contains one stack frame for every function call to factorial. Each of the stack frames, except the one for the <em>main</em> function, point at the <em>factorial</em> code. While there is only one copy of each function’s code, there may be multiple stack frames executing the code. This happens when a function is recursive. There also multiple <em>n</em> values, one for each stack frame. Again this is expected in a recursive function.</p>
+<div class="figbox docutils container">
+<blockquote>
+<div><div class="figure">
+<img alt="_images/factorial.png" src="_images/factorial.png" />
+</div>
+</div></blockquote>
+<p><strong>Fig 3.20</strong> Execution of fact.casm</p>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-3-10">
+<span id="exercise3-10"></span><h3>3.17.10. Solution to Practice Problem 3.10<a class="headerlink" href="#solution-to-practice-problem-3-10" title="Permalink to this headline">¶</a></h3>
+<p>Python is a very transparent language. It turns out there is function called dir that can be used to print the attributes of an object which are the keys of its dictionary.  The dictionary maps names (i.e. strings) to the attributes of the object. The following strings map to their indicated values.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>__init__ is mapped to the constructor code.</li>
+<li>eat is mapped to the eat method.</li>
+<li>speak is mapped to the speak method.</li>
+<li>food is mapped to an integer.</li>
+<li>This is all that is mapped by JCoCo. However, if you try this in Python you will discover that a number of other methods are mapped to default implementations of magic methods in Python including a hash method, comparison methods like equality (i.e. __eq__), a repr method, a str method, and a number of others.</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="solution-to-practice-problem-3-11">
+<span id="exercise3-11"></span><h3>3.17.11. Solution to Practice Problem 3.11<a class="headerlink" href="#solution-to-practice-problem-3-11" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97</pre></div></td><td class="code"><div class="highlight"><pre><span></span>Class: Animal
+BEGIN
+    Function: eat/1
+    Constants: None, 1
+    Locals: self
+    Globals: food
+    BEGIN
+              LOAD_FAST                      0
+              LOAD_ATTR                      0
+              LOAD_CONST                     1
+              BINARY_ADD
+              LOAD_FAST                      0
+              STORE_ATTR                     0
+              LOAD_CONST                     0
+              RETURN_VALUE
+    END
+    Function: __init__/2
+    Constants: None, 0
+    Locals: self, name
+    Globals: name, food
+    BEGIN
+              LOAD_FAST                      1
+              LOAD_FAST                      0
+              STORE_ATTR                     0
+              LOAD_CONST                     1
+              LOAD_FAST                      0
+              STORE_ATTR                     1
+              LOAD_CONST                     0
+              RETURN_VALUE
+    END
+    Function: speak/1
+    Constants: None, &quot;is an animal&quot;
+    Locals: self
+    Globals: print, name
+    BEGIN
+              LOAD_GLOBAL                    0
+              LOAD_FAST                      0
+              LOAD_ATTR                      1
+              LOAD_CONST                     1
+              CALL_FUNCTION                  2
+              POP_TOP
+              LOAD_CONST                     0
+              RETURN_VALUE
+    END
+END
+Class: Dog(Animal)
+BEGIN
+    Function: __init__/2
+    Constants: None
+    Locals: self, name
+    FreeVars: __class__
+    Globals: super, __init__
+    BEGIN
+              LOAD_GLOBAL                    0
+              CALL_FUNCTION                  0
+              LOAD_ATTR                      1
+              LOAD_FAST                      1
+              CALL_FUNCTION                  1
+              POP_TOP
+              LOAD_CONST                     0
+              RETURN_VALUE
+    END
+    Function: speak/1
+    Constants: None, &quot;says woof!&quot;
+    Locals: self
+    Globals: print, name
+    BEGIN
+              LOAD_GLOBAL                    0
+              LOAD_FAST                      0
+              LOAD_ATTR                      1
+              LOAD_CONST                     1
+              CALL_FUNCTION                  2
+              POP_TOP
+              LOAD_CONST                     0
+              RETURN_VALUE
+    END
+END
+Function: main/0
+Constants: None, &quot;Mesa&quot;
+Locals: mesa
+Globals: Dog, eat, speak
+BEGIN
+          LOAD_GLOBAL                    0
+          LOAD_CONST                     1
+          CALL_FUNCTION                  1
+          STORE_FAST                     0
+          LOAD_FAST                      0
+          LOAD_ATTR                      1
+          CALL_FUNCTION                  0
+          POP_TOP
+          LOAD_FAST                      0
+          LOAD_ATTR                      2
+          CALL_FUNCTION                  0
+          POP_TOP
+          LOAD_CONST                     0
+          RETURN_VALUE
+END
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="solution-to-practice-problem-3-12">
+<span id="exercise3-12"></span><h3>3.17.12. Solution to Practice Problem 3.12<a class="headerlink" href="#solution-to-practice-problem-3-12" title="Permalink to this headline">¶</a></h3>
+<p>To get ready to execute the built-in class builder function the stack must contain the following in order from the top of the stack down: The name of the class is on the top of the operand stack. Below the name is the closure of the class initializing function and its environment. Below that is the built-in class builder function itself. The CALL_FUNCTION instruction is executed with two arguments indicated to call the class builder.</p>
+<p>Upon its return, the two arguments and the class builder function have been popped from the stack and the instance of the class is left on the operand stack. This class instance may then be stored as a reference from some known location, likely by a STORE_FAST instruction.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="oop.html" title="4. Object-Oriented Programming"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="syntax.html" title="2. Syntax"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Foundations of Programming Languages Second Edition</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Kent D. Lee.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

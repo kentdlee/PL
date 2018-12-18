@@ -1,0 +1,28 @@
+
+
+ 
+
+                                                
+
+   preface.rst
+
+Contents
+========
+
+.. toctree::
+   :maxdepth: 4
+
+   introduction.rst
+
+   syntax.rst
+
+   cpp.rst
+
+   functional.rst
+
+   usingsml.rst
+
+   prolog.rst
+
+   semantics.rst
+

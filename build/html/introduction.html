@@ -1,0 +1,461 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1. Introduction &#8212; Foundations of Programming Languages Second Edition</title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="2. Syntax" href="syntax.html" />
+    <link rel="prev" title="Welcome!" href="index.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="syntax.html" title="2. Syntax"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Foundations of Programming Languages Second Edition</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1. Introduction</a><ul>
+<li><a class="reference internal" href="#historical-perspective">1.1. Historical Perspective</a></li>
+<li><a class="reference internal" href="#models-of-computation">1.2. Models of Computation</a><ul>
+<li><a class="reference internal" href="#the-imperative-model">1.2.1. The Imperative Model</a></li>
+<li><a class="reference internal" href="#the-functional-model">1.2.2. The Functional Model</a></li>
+<li><a class="reference internal" href="#the-logic-model">1.2.3. The Logic Model</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-origins-of-a-few-programming-languages">1.3. The Origins of a Few Programming Languages</a><ul>
+<li><a class="reference internal" href="#a-brief-history-of-c-and-c">1.3.1. A Brief History of C and C++</a></li>
+<li><a class="reference internal" href="#a-brief-history-of-python">1.3.2. A Brief History of Python</a></li>
+<li><a class="reference internal" href="#a-brief-history-of-java">1.3.3. A Brief History of Java</a></li>
+<li><a class="reference internal" href="#a-brief-history-of-standard-ml">1.3.4. A Brief History of Standard ML</a></li>
+<li><a class="reference internal" href="#a-brief-history-of-prolog">1.3.5. A Brief History of Prolog</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#language-implementation">1.4. Language Implementation</a><ul>
+<li><a class="reference internal" href="#compilation">1.4.1. Compilation</a></li>
+<li><a class="reference internal" href="#interpretation">1.4.2. Interpretation</a></li>
+<li><a class="reference internal" href="#virtual-machines">1.4.3. Virtual Machines</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#types-and-type-checking">1.5. Types and Type Checking</a></li>
+<li><a class="reference internal" href="#chapter-summary">1.6. Chapter Summary</a></li>
+<li><a class="reference internal" href="#review-questions">1.7. Review Questions</a></li>
+<li><a class="reference internal" href="#solutions-to-practice-problems">1.8. Solutions to Practice Problems</a><ul>
+<li><a class="reference internal" href="#solution-to-practice-problem-1-1">1.8.1. Solution to Practice Problem 1.1</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-1-2">1.8.2. Solution to Practice Problem 1.2</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-1-3">1.8.3. Solution to Practice Problem 1.3</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-1-4">1.8.4. Solution to Practice Problem 1.4</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-1-5">1.8.5. Solution to Practice Problem 1.5</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="syntax.html"
+                        title="next chapter">2. Syntax</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/introduction.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="introduction">
+<h1>1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="historical-perspective">
+<h2>1.1. Historical Perspective<a class="headerlink" href="#historical-perspective" title="Permalink to this headline">¶</a></h2>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure" id="sophusfig">
+<img alt="_images/liesmall.jpg" src="_images/liesmall.jpg" />
+</div>
+</div></blockquote>
+<p><strong>Fig 1.1</strong> Sophus Lie</p>
+</div>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure" id="backusfig">
+<img alt="_images/backusibm2small.jpg" src="_images/backusibm2small.jpg" />
+</div>
+</div></blockquote>
+<p><strong>Fig 1.2</strong> John Backus</p>
+</div>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure" id="mccarthy">
+<img alt="_images/jmcbwsmall.jpg" src="_images/jmcbwsmall.jpg" />
+</div>
+</div></blockquote>
+<p><strong>Fig 1.3</strong> John McCarthy</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 1.1</strong></p>
+<p>Find the answers to the following questions.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>What are the origins of the three major computational models that early computer scientists developed?</li>
+<li>Who was Alan Turing and Alonzo Church and what were some of their their contributions to Computer Science?</li>
+<li>What idea did both John von Neumann and Alan Turing contribute to?</li>
+<li>What notation did John Backus develop and what was one of its first uses?</li>
+<li>What year did Alan Turing first propose the Turing machine and why?</li>
+<li>What year did Alonzo Church first propose the <img class="math" src="_images/math/76f1d8ace30435987c01a00ca53a71cba1f40e6c.png" alt="\lambda"/>-calculus and why?</li>
+<li>Why are Eckert and Mauchly famous?</li>
+<li>Why are the history of Mathematics and Computer Science so closely tied together?</li>
+</ol>
+</div></blockquote>
+<p><a class="reference internal" href="#exercise1-0"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+<div class="section" id="models-of-computation">
+<h2>1.2. Models of Computation<a class="headerlink" href="#models-of-computation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="the-imperative-model">
+<h3>1.2.1. The Imperative Model<a class="headerlink" href="#the-imperative-model" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure" id="impmodel">
+<img alt="_images/ImperativeModel.png" src="_images/ImperativeModel.png" />
+</div>
+</div></blockquote>
+<p><strong>Fig 1.4</strong> Imperative Model</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 1.2</strong></p>
+<p>Find the answers to the following questions.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>What are the three divisions of data memory called?</li>
+<li>When does an item in the heap get created?</li>
+<li>What goes in an activation record?</li>
+<li>When is an activation record created?</li>
+<li>When is an activation record deleted?</li>
+<li>What is the primary goal of imperative, object-oriented programming?</li>
+</ol>
+</div></blockquote>
+<p><a class="reference internal" href="#exercise1-1"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+<div class="section" id="the-functional-model">
+<h3>1.2.2. The Functional Model<a class="headerlink" href="#the-functional-model" title="Permalink to this headline">¶</a></h3>
+<div class="exercise docutils container">
+<p><strong>Practice 1.3</strong></p>
+<p>Answer the following questions.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>What are some examples of functional languages?</li>
+<li>What is the primary difference between the functional and imperative models?</li>
+<li>Immutable data is data that cannot be changed once created. The presence of immutable data simplifies the conceptual model of programming. Does the imperative or functional model emphasize immutable data?</li>
+</ol>
+</div></blockquote>
+<p><a class="reference internal" href="#exercise1-2"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+<div class="section" id="the-logic-model">
+<h3>1.2.3. The Logic Model<a class="headerlink" href="#the-logic-model" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure" id="logicmodel">
+<img alt="_images/logicmodel.png" src="_images/logicmodel.png" />
+</div>
+</div></blockquote>
+<p><strong>Fig 1.5</strong> Logic Model of Computation</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 1.4</strong></p>
+<p>Answer these questions on what you just read.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>How many programs can you write in a logic programming language like Prolog?</li>
+<li>What does the programmer do when writing in Prolog?</li>
+</ol>
+</div></blockquote>
+<p><a class="reference internal" href="#exercise1-3"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+</div>
+<div class="section" id="the-origins-of-a-few-programming-languages">
+<h2>1.3. The Origins of a Few Programming Languages<a class="headerlink" href="#the-origins-of-a-few-programming-languages" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="a-brief-history-of-c-and-c">
+<h3>1.3.1. A Brief History of C and C++<a class="headerlink" href="#a-brief-history-of-c-and-c" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure" id="stroustruppic">
+<img alt="_images/Bjarne.jpg" src="_images/Bjarne.jpg" />
+</div>
+</div></blockquote>
+<p><strong>Fig 1.6</strong> Bjarne Stroustrup</p>
+</div>
+</div>
+<div class="section" id="a-brief-history-of-python">
+<h3>1.3.2. A Brief History of Python<a class="headerlink" href="#a-brief-history-of-python" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure" id="guidofig">
+<img alt="_images/guido.jpg" src="_images/guido.jpg" />
+</div>
+</div></blockquote>
+<p><strong>Fig 1.7</strong> Guido van Rossum</p>
+</div>
+</div>
+<div class="section" id="a-brief-history-of-java">
+<h3>1.3.3. A Brief History of Java<a class="headerlink" href="#a-brief-history-of-java" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="a-brief-history-of-standard-ml">
+<h3>1.3.4. A Brief History of Standard ML<a class="headerlink" href="#a-brief-history-of-standard-ml" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure" id="milnerfig">
+<img alt="_images/milnersmall.jpg" src="_images/milnersmall.jpg" />
+</div>
+</div></blockquote>
+<p><strong>Fig 1.8</strong> Robin Milner</p>
+</div>
+</div>
+<div class="section" id="a-brief-history-of-prolog">
+<h3>1.3.5. A Brief History of Prolog<a class="headerlink" href="#a-brief-history-of-prolog" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure">
+<img alt="_images/alainboitsmall.jpg" src="_images/alainboitsmall.jpg" />
+</div>
+</div></blockquote>
+<p><strong>Fig 1.9</strong> Alain Colmerauer</p>
+</div>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure" id="kowpic">
+<img alt="_images/kowalskismall.jpg" src="_images/kowalskismall.jpg" />
+</div>
+</div></blockquote>
+<p><strong>Fig 1.10</strong> Robert Kowalski</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 1.5</strong></p>
+<p>Answer the following questions.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Who invented C++? C? Standard ML? Prolog? Python? Java?</li>
+<li>What do Standard ML and Prolog’s histories have in common?</li>
+<li>What do Prolog and Python have in common?</li>
+<li>What language or languages is Standard ML based on?</li>
+</ol>
+</div></blockquote>
+<p><a class="reference internal" href="#exercise1-4"><span class="std std-ref">You can check your answer(s) at the end of the chapter.</span></a></p>
+</div>
+</div>
+</div>
+<div class="section" id="language-implementation">
+<h2>1.4. Language Implementation<a class="headerlink" href="#language-implementation" title="Permalink to this headline">¶</a></h2>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure" id="langimp">
+<img alt="_images/system.png" src="_images/system.png" />
+</div>
+</div></blockquote>
+<p><strong>Fig 1.11</strong> Language Implementation</p>
+</div>
+<div class="section" id="compilation">
+<h3>1.4.1. Compilation<a class="headerlink" href="#compilation" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure" id="comppic">
+<img alt="_images/compilation.png" src="_images/compilation.png" />
+</div>
+</div></blockquote>
+<p><strong>Fig 1.12</strong> The Compilation Process</p>
+</div>
+</div>
+<div class="section" id="interpretation">
+<h3>1.4.2. Interpretation<a class="headerlink" href="#interpretation" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure" id="interpretfig">
+<img alt="_images/interpretation.png" src="_images/interpretation.png" />
+</div>
+</div></blockquote>
+<p><strong>Fig 1.13</strong> The Interpretation Process</p>
+</div>
+</div>
+<div class="section" id="virtual-machines">
+<h3>1.4.3. Virtual Machines<a class="headerlink" href="#virtual-machines" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<blockquote>
+<div><div class="figure">
+<img alt="_images/hybrid.png" src="_images/hybrid.png" />
+</div>
+</div></blockquote>
+<p><strong>Fig 1.14</strong> Virtual Machine Implementation</p>
+</div>
+</div>
+</div>
+<div class="section" id="types-and-type-checking">
+<h2>1.5. Types and Type Checking<a class="headerlink" href="#types-and-type-checking" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="chapter-summary">
+<h2>1.6. Chapter Summary<a class="headerlink" href="#chapter-summary" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="review-questions">
+<h2>1.7. Review Questions<a class="headerlink" href="#review-questions" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ol class="arabic simple">
+<li>What are the three ways of thinking about programming, often called programming paradigms?</li>
+<li>Name at least one language for each of the three methods of programming described in the previous question?</li>
+<li>Name one person who had a great deal to do with the development of the imperative programming model. Name another who contributed to the functional model. Finally, name a person who was responsible for the development of the logic model of programming?</li>
+<li>What are the primary characteristics of each of the imperative, functional, and logic models?</li>
+<li>Who are recognized as the founders of each of the languages this text covers: Java, C++, Python, Standard ML, and Prolog?</li>
+<li>Name a language, other than Python, C++, or Java, that is imperative object-oriented in nature.</li>
+<li>Name a language besides Standard ML, that is a functional programming language.</li>
+<li>What other logic programming languages are there other than Prolog? You might have to get creative on this one.</li>
+<li>Why is compiling a program preferred over interpreting a program?</li>
+<li>Why is interpreting a program preferred over compiling a program?</li>
+<li>What bene ts do virtual machine languages have over interpreted languages?</li>
+<li>What is a bytecode program? Name two languages that use bytecode in their implementation.</li>
+<li>Why are types important in a programming language?</li>
+<li>What does it mean for a programming language to be dynamically typed?</li>
+<li>What does it mean for a programming language to be statically typed?</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="solutions-to-practice-problems">
+<h2>1.8. Solutions to Practice Problems<a class="headerlink" href="#solutions-to-practice-problems" title="Permalink to this headline">¶</a></h2>
+<p>These are solutions to the practice problems. You should only consult these answers after you have tried each of them for yourself first. Practice problems are meant to help reinforce the material you have just read so make use of them.</p>
+<div class="section" id="solution-to-practice-problem-1-1">
+<span id="exercise1-0"></span><h3>1.8.1. Solution to Practice Problem 1.1<a class="headerlink" href="#solution-to-practice-problem-1-1" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ol class="arabic simple">
+<li>The origins of the three models are the Turing Machine, the <img class="math" src="_images/math/76f1d8ace30435987c01a00ca53a71cba1f40e6c.png" alt="\lambda"/>-calculus, and propostional and predicate logic.</li>
+<li>Alan Turing as a PhD student of Alonzo Church. Alan Turing developed the Turing Machine and Alonzo Church developed the <img class="math" src="_images/math/76f1d8ace30435987c01a00ca53a71cba1f40e6c.png" alt="\lambda"/>-calculus to answer prove there were somethings that are not computable. They later proved the two approaches were equivalent in their power to express computation.</li>
+<li>Both von Neumann and Turing contributed to the idea of a stored-program computer.</li>
+<li>Backus developed BNF notation which was used in the development of Algol 60.</li>
+<li>1936 was a big year for Computer Science.</li>
+<li>So was 1946. That was the year ENIAC was unveiled. Eckert and Mauchly designed and built ENIAC.</li>
+<li>The problems in Mathematics were growing complex enough that many mathematicians were developing models and languages for expressing their algorithms. This was one of the driving factors in the development of computers and Computer Science as a discipline.</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="solution-to-practice-problem-1-2">
+<span id="exercise1-1"></span><h3>1.8.2. Solution to Practice Problem 1.2<a class="headerlink" href="#solution-to-practice-problem-1-2" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ol class="arabic simple">
+<li>The run-time stack, global memory, and the heap are the three divisions of data memory.</li>
+<li>Data on the heap is created at run-time.</li>
+<li>An activation record holds information like local variables, the program counter, the stack pointer, and other state information necessary for a function invocation.</li>
+<li>An activation record is created each time a function is called.</li>
+<li>An activation record is deleted when a function returns.</li>
+<li>The primary goal of imperative, object-oriented programming is to update memory by updating variables and/or objects as the program executes. The primary operation is memory updates.</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="solution-to-practice-problem-1-3">
+<span id="exercise1-2"></span><h3>1.8.3. Solution to Practice Problem 1.3<a class="headerlink" href="#solution-to-practice-problem-1-3" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Functional languages include Standard ML, Lisp, Haskell, and Scheme.</li>
+<li>In the imperative model the primary operation revolves around updating memory (the assignment statement). In the functional model the primary operation is function application.</li>
+<li>The functional model emphasizes immutable data. However, some imperative languages have some immutable data as well. For instance, Java strings are immutable.</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="solution-to-practice-problem-1-4">
+<span id="exercise1-3"></span><h3>1.8.4. Solution to Practice Problem 1.4<a class="headerlink" href="#solution-to-practice-problem-1-4" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ol class="arabic simple">
+<li>You never write a program in Prolog. You write a database of rules in Prolog that tell the single Prolog program (depth first search) how to proceed.</li>
+<li>The programmer provides a database of facts and predicates that tell Prolog about a problem. In Prolog the programmer describes the problem instead of programming the solution.</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="solution-to-practice-problem-1-5">
+<span id="exercise1-4"></span><h3>1.8.5. Solution to Practice Problem 1.5<a class="headerlink" href="#solution-to-practice-problem-1-5" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ol class="arabic simple">
+<li>C++ was invented by Bjourne Stroustrup. C was created by Dennis Ritchie. Standard ML was primarily designed by Robin Milner. Prolog was designed by Alain Colmerauer and Philippe Roussel with the assistance of Robert Kowalski. Python was created by Guido van Rossum. Java was the work of the Green team and James Gosling.</li>
+<li>Standard ML and Prolog were both designed as languages for automated theorem proving first. Then they became general purpose programming languages later.</li>
+<li>Both Python and Prolog run on virtual machine implementations. Python’s virtual machine is internal to the interpreter. Prolog’s virtual machine is called WAM (Warren Abstract Machine).</li>
+<li>Standard ML is influenced by Lisp, Pascal, and Algol.</li>
+</ol>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="syntax.html" title="2. Syntax"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Foundations of Programming Languages Second Edition</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Kent D. Lee.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

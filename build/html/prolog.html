@@ -1,0 +1,855 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>7. Prolog &#8212; Foundations of Programming Languages Second Edition</title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="8. Type Inference" href="typeinference.html" />
+    <link rel="prev" title="6. Compiling Standard ML" href="usingsml.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="typeinference.html" title="8. Type Inference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="usingsml.html" title="6. Compiling Standard ML"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Foundations of Programming Languages Second Edition</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">7. Prolog</a><ul>
+<li><a class="reference internal" href="#getting-started-with-prolog">7.1. Getting Started with Prolog</a><ul>
+<li><a class="reference internal" href="#example-7-2">7.1.1. Example 7.2</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fundamentals">7.2. Fundamentals</a><ul>
+<li><a class="reference internal" href="#example-7-3">7.2.1. Example 7.3</a></li>
+<li><a class="reference internal" href="#example-7-4">7.2.2. Example 7.4</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-prolog-program">7.3. The Prolog Program</a><ul>
+<li><a class="reference internal" href="#example-7-5">7.3.1. Example 7.5</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lists">7.4. Lists</a><ul>
+<li><a class="reference internal" href="#example-7-6">7.4.1. Example 7.6</a></li>
+<li><a class="reference internal" href="#example-7-7">7.4.2. Example 7.7</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-accumulator-pattern">7.5. The Accumulator Pattern</a></li>
+<li><a class="reference internal" href="#built-in-predicates">7.6. Built-in Predicates</a></li>
+<li><a class="reference internal" href="#unification-and-arithmetic">7.7. Unification and Arithmetic</a></li>
+<li><a class="reference internal" href="#input-and-output">7.8. Input and Output</a><ul>
+<li><a class="reference internal" href="#example-7-8">7.8.1. Example 7.8</a></li>
+<li><a class="reference internal" href="#example-7-9">7.8.2. Example 7.9</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#structures">7.9. Structures</a><ul>
+<li><a class="reference internal" href="#example-7-10">7.9.1. Example 7.10</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#parsing-in-prolog">7.10. Parsing in Prolog</a><ul>
+<li><a class="reference internal" href="#example-7-11">7.10.1. Example 7.11</a></li>
+<li><a class="reference internal" href="#example-7-12">7.10.2. Example 7.12</a></li>
+<li><a class="reference internal" href="#example-7-13">7.10.3. Example 7.13</a></li>
+<li><a class="reference internal" href="#example-7-14">7.10.4. Example 7.14</a></li>
+<li><a class="reference internal" href="#difference-lists">7.10.5. Difference Lists</a></li>
+<li><a class="reference internal" href="#example-7-15">7.10.6. Example 7.15</a></li>
+<li><a class="reference internal" href="#example-7-16">7.10.7. Example 7.16</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#prolog-grammar-rules">7.11. Prolog Grammar Rules</a><ul>
+<li><a class="reference internal" href="#example-7-17">7.11.1. Example 7.17</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#building-an-ast">7.12. Building an AST</a><ul>
+<li><a class="reference internal" href="#example-7-18">7.12.1. Example 7.18</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#attribute-grammars">7.13. Attribute Grammars</a><ul>
+<li><a class="reference internal" href="#example-7-19">7.13.1. Example 7.19</a></li>
+<li><a class="reference internal" href="#synthesized-vs-inherited">7.13.2. Synthesized vs Inherited</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#chapter-summary">7.14. Chapter Summary</a></li>
+<li><a class="reference internal" href="#review-questions">7.15. Review Questions</a></li>
+<li><a class="reference internal" href="#exercises">7.16. Exercises</a></li>
+<li><a class="reference internal" href="#solutions-to-practice-problems">7.17. Solutions to Practice Problems</a><ul>
+<li><a class="reference internal" href="#solution-to-practice-problem-7-1">7.17.1. Solution to Practice Problem 7.1</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-7-2">7.17.2. Solution to Practice Problem 7.2</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-7-3">7.17.3. Solution to Practice Problem 7.3</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-7-4">7.17.4. Solution to Practice Problem 7.4</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-7-5">7.17.5. Solution to Practice Problem 7.5</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-7-6">7.17.6. Solution to Practice Problem 7.6</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-7-7">7.17.7. Solution to Practice Problem 7.7</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-7-8">7.17.8. Solution to Practice Problem 7.8</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-7-9">7.17.9. Solution to Practice Problem 7.9</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-7-10">7.17.10. Solution to Practice Problem 7.10</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-7-11">7.17.11. Solution to Practice Problem 7.11</a></li>
+<li><a class="reference internal" href="#solution-to-practice-problem-7-12">7.17.12. Solution to Practice Problem 7.12</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="usingsml.html"
+                        title="previous chapter">6. Compiling Standard ML</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="typeinference.html"
+                        title="next chapter">8. Type Inference</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/prolog.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="prolog">
+<h1>7. Prolog<a class="headerlink" href="#prolog" title="Permalink to this headline">¶</a></h1>
+<div class="figboxcenter docutils container">
+<div class="highlight-sml notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kr">let</span> <span class="kr">val</span> <span class="nv">m</span> <span class="p">=</span> <span class="n">ref</span> <span class="mi">0</span>
+    <span class="kr">val</span> <span class="nv">n</span> <span class="p">=</span> <span class="n">ref</span> <span class="mi">0</span>
+<span class="kr">in</span>
+  <span class="n">m:=</span><span class="nn">Int</span><span class="p">.</span><span class="n">fromString</span><span class="p">(</span><span class="n">input</span><span class="p">(</span><span class="s2">&quot;Please enter an integer: &quot;</span><span class="p">));</span>
+  <span class="n">n:=</span><span class="nn">Int</span><span class="p">.</span><span class="n">fromString</span><span class="p">(</span><span class="n">input</span><span class="p">(</span><span class="s2">&quot;Please enter another: &quot;</span><span class="p">));</span>
+  <span class="kr">while</span> <span class="n">!m</span> <span class="n">&gt;=</span> <span class="n">!n</span> <span class="kr">do</span> <span class="n">m:=!m-!n</span><span class="p">;</span>
+  <span class="n">println</span><span class="p">(</span><span class="n">!m</span><span class="p">)</span>
+<span class="kr">end</span>
+</pre></div>
+</td></tr></table></div>
+<p><strong>Fig. 7.1</strong> A Small Sample</p>
+</div>
+<div class="section" id="getting-started-with-prolog">
+<h2>7.1. Getting Started with Prolog<a class="headerlink" href="#getting-started-with-prolog" title="Permalink to this headline">¶</a></h2>
+<div class="figboxcenter docutils container">
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">fred</span><span class="p">,</span> <span class="s s-Atom">sophusw</span><span class="p">).</span> <span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">fred</span><span class="p">,</span> <span class="s s-Atom">lawrence</span><span class="p">).</span>
+<span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">fred</span><span class="p">,</span> <span class="s s-Atom">kenny</span><span class="p">).</span> <span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">fred</span><span class="p">,</span> <span class="s s-Atom">esther</span><span class="p">).</span>
+<span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">inger</span><span class="p">,</span><span class="s s-Atom">sophusw</span><span class="p">).</span> <span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">johnhs</span><span class="p">,</span> <span class="s s-Atom">fred</span><span class="p">).</span>
+<span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">mads</span><span class="p">,</span><span class="s s-Atom">johnhs</span><span class="p">).</span> <span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">lars</span><span class="p">,</span> <span class="s s-Atom">johan</span><span class="p">).</span>
+<span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">johan</span><span class="p">,</span><span class="s s-Atom">sophus</span><span class="p">).</span> <span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">lars</span><span class="p">,</span><span class="s s-Atom">mads</span><span class="p">).</span>
+<span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">sophusw</span><span class="p">,</span><span class="s s-Atom">gary</span><span class="p">).</span> <span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">sophusw</span><span class="p">,</span><span class="s s-Atom">john</span><span class="p">).</span>
+<span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">sophusw</span><span class="p">,</span><span class="s s-Atom">bruce</span><span class="p">).</span> <span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">gary</span><span class="p">,</span> <span class="s s-Atom">kent</span><span class="p">).</span>
+<span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">gary</span><span class="p">,</span> <span class="s s-Atom">stephen</span><span class="p">).</span> <span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">gary</span><span class="p">,</span><span class="s s-Atom">anne</span><span class="p">).</span>
+<span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">john</span><span class="p">,</span><span class="s s-Atom">michael</span><span class="p">).</span> <span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">john</span><span class="p">,</span><span class="s s-Atom">michelle</span><span class="p">).</span>
+<span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">addie</span><span class="p">,</span><span class="s s-Atom">gary</span><span class="p">).</span> <span class="nf">parent</span><span class="p">(</span><span class="s s-Atom">gerry</span><span class="p">,</span> <span class="s s-Atom">kent</span><span class="p">).</span>
+<span class="nf">male</span><span class="p">(</span><span class="s s-Atom">gary</span><span class="p">).</span> <span class="nf">male</span><span class="p">(</span><span class="s s-Atom">fred</span><span class="p">).</span>
+<span class="nf">male</span><span class="p">(</span><span class="s s-Atom">sophus</span><span class="p">).</span> <span class="nf">male</span><span class="p">(</span><span class="s s-Atom">lawrence</span><span class="p">).</span>
+<span class="nf">male</span><span class="p">(</span><span class="s s-Atom">kenny</span><span class="p">).</span> <span class="nf">male</span><span class="p">(</span><span class="s s-Atom">esther</span><span class="p">).</span>
+<span class="nf">male</span><span class="p">(</span><span class="s s-Atom">johnhs</span><span class="p">).</span> <span class="nf">male</span><span class="p">(</span><span class="s s-Atom">mads</span><span class="p">).</span>
+<span class="nf">male</span><span class="p">(</span><span class="s s-Atom">lars</span><span class="p">).</span> <span class="nf">male</span><span class="p">(</span><span class="s s-Atom">john</span><span class="p">).</span>
+<span class="nf">male</span><span class="p">(</span><span class="s s-Atom">bruce</span><span class="p">).</span> <span class="nf">male</span><span class="p">(</span><span class="s s-Atom">johan</span><span class="p">).</span>
+<span class="nf">male</span><span class="p">(</span><span class="s s-Atom">sophusw</span><span class="p">).</span> <span class="nf">male</span><span class="p">(</span><span class="s s-Atom">kent</span><span class="p">).</span>
+<span class="nf">male</span><span class="p">(</span><span class="s s-Atom">stephen</span><span class="p">).</span> <span class="nf">female</span><span class="p">(</span><span class="s s-Atom">inger</span><span class="p">).</span>
+<span class="nf">female</span><span class="p">(</span><span class="s s-Atom">anne</span><span class="p">).</span> <span class="nf">female</span><span class="p">(</span><span class="s s-Atom">michelle</span><span class="p">).</span>
+<span class="nf">female</span><span class="p">(</span><span class="s s-Atom">gerry</span><span class="p">).</span> <span class="nf">female</span><span class="p">(</span><span class="s s-Atom">addie</span><span class="p">).</span>
+<span class="nf">father</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="nv">Y</span><span class="p">):-</span><span class="nf">parent</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="nv">Y</span><span class="p">),</span><span class="nf">male</span><span class="p">(</span><span class="nv">X</span><span class="p">).</span>
+<span class="nf">mother</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="nv">Y</span><span class="p">):-</span><span class="nf">parent</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="nv">Y</span><span class="p">),</span> <span class="nf">female</span><span class="p">(</span><span class="nv">X</span><span class="p">).</span>
+</pre></div>
+</div>
+<p><strong>Fig. 7.2</strong> The Family Tree</p>
+</div>
+<div class="section" id="example-7-2">
+<h3>7.1.1. Example 7.2<a class="headerlink" href="#example-7-2" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="fundamentals">
+<h2>7.2. Fundamentals<a class="headerlink" href="#fundamentals" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">father</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="nv">Y</span><span class="p">):-</span><span class="nf">parent</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="nv">Y</span><span class="p">),</span> <span class="nf">male</span><span class="p">(</span><span class="nv">X</span><span class="p">).</span>
+</pre></div>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 7.1</strong></p>
+<p>What are the terms in example 7.2? What is the difference between an atom and a variable? Give examples of terms, atoms, and variables from example 7.2.</p>
+<p><a class="reference internal" href="#exercise7-1"><span class="std std-ref">You can check your answer(s) here.</span></a></p>
+</div>
+<div class="section" id="example-7-3">
+<h3>7.2.1. Example 7.3<a class="headerlink" href="#example-7-3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="c1">% swipl</span>
+<span class="s s-Atom">?-</span> <span class="nf">consult</span><span class="p">(</span><span class="s s-Atom">&#39;family.prolog&#39;</span><span class="p">).</span>
+<span class="s s-Atom">?-</span> <span class="nf">father</span><span class="p">(</span><span class="s s-Atom">johan</span><span class="p">,</span><span class="s s-Atom">sophus</span><span class="p">).</span>
+<span class="nv">Yes</span>
+<span class="s s-Atom">?-</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-7-4">
+<h3>7.2.2. Example 7.4<a class="headerlink" href="#example-7-4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="s s-Atom">?-</span> <span class="nf">father</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span> <span class="s s-Atom">sophus</span><span class="p">).</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="s s-Atom">johan</span>
+<span class="nv">Yes</span>
+<span class="s s-Atom">?-</span> <span class="nf">parent</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="s s-Atom">kent</span><span class="p">).</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="s s-Atom">gary</span> <span class="p">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="s s-Atom">gerry</span> <span class="p">;</span>
+<span class="nv">No</span>
+<span class="s s-Atom">?-</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="the-prolog-program">
+<h2>7.3. The Prolog Program<a class="headerlink" href="#the-prolog-program" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="example-7-5">
+<h3>7.3.1. Example 7.5<a class="headerlink" href="#example-7-5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="s s-Atom">?-</span> <span class="nf">father</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="s s-Atom">kent</span><span class="p">).</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="s s-Atom">gary</span> <span class="p">;</span>
+<span class="nv">No</span>
+<span class="s s-Atom">?-</span> <span class="nf">father</span><span class="p">(</span><span class="s s-Atom">gary</span><span class="p">,</span><span class="nv">X</span><span class="p">).</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="s s-Atom">kent</span> <span class="p">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="s s-Atom">stephen</span> <span class="p">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="s s-Atom">anne</span> <span class="p">;</span>
+<span class="nv">No</span>
+</pre></div>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 7.2</strong></p>
+<p>Write predicates that define the following relationships.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>brother</li>
+<li>sister</li>
+<li>grandparent</li>
+<li>grandchild</li>
+</ol>
+</div></blockquote>
+<p>Depending on how you wrote grandparent and grandchild  there might be something to note about these two predicates. Do you see a pattern? Why?</p>
+<p><a class="reference internal" href="#exercise7-2"><span class="std std-ref">You can check your answer(s) here.</span></a></p>
+</div>
+</div>
+</div>
+<div class="section" id="lists">
+<h2>7.4. Lists<a class="headerlink" href="#lists" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="example-7-6">
+<h3>7.4.1. Example 7.6<a class="headerlink" href="#example-7-6" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">append</span><span class="p">([],</span><span class="nv">Y</span><span class="p">,</span><span class="nv">Y</span><span class="p">).</span>
+<span class="nf">append</span><span class="p">([</span><span class="nv">H</span><span class="p">|</span><span class="nv">T1</span><span class="p">],</span> <span class="nv">L2</span><span class="p">,</span> <span class="p">[</span><span class="nv">H</span><span class="p">|</span><span class="nv">T3</span><span class="p">])</span> <span class="p">:-</span> <span class="nf">append</span><span class="p">(</span><span class="nv">T1</span><span class="p">,</span><span class="nv">L2</span><span class="p">,</span><span class="nv">T3</span><span class="p">).</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-7-7">
+<h3>7.4.2. Example 7.7<a class="headerlink" href="#example-7-7" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">sublist</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="nv">Y</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">append</span><span class="p">(</span><span class="k">_</span><span class="p">,</span><span class="nv">X</span><span class="p">,</span><span class="nv">L</span><span class="p">),</span> <span class="nf">append</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="nv">Y</span><span class="p">).</span>
+
+
+
+<span class="p">..</span> <span class="nn">container</span><span class="p">:</span><span class="s s-Atom">:</span> <span class="s s-Atom">figboxcenter</span>
+
+   <span class="p">..</span> <span class="nn">figure</span><span class="p">:</span><span class="s s-Atom">:</span> <span class="s s-Atom">prologproof</span><span class="p">.</span><span class="s s-Atom">png</span>
+
+
+<span class="s s-Atom">**</span><span class="nv">Fig</span><span class="p">.</span> <span class="mf">7.3</span><span class="s s-Atom">**</span> <span class="nv">A</span> <span class="nv">Unification</span> <span class="nv">Tree</span>
+</pre></div>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 7.3</strong></p>
+<p>What is the complexity of the append predicate? How many steps does it take to append two lists?</p>
+<p><a class="reference internal" href="#exercise7-3"><span class="std std-ref">You can check your answer(s) here.</span></a></p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 7.4</strong></p>
+<p>Write the reverse predicate for lists in Prolog using the append predicate. What is the complexity of this reverse predicate?</p>
+<p><a class="reference internal" href="#exercise7-4"><span class="std std-ref">You can check your answer(s) here.</span></a></p>
+</div>
+</div>
+</div>
+<div class="section" id="the-accumulator-pattern">
+<h2>7.5. The Accumulator Pattern<a class="headerlink" href="#the-accumulator-pattern" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-sml notranslate"><div class="highlight"><pre><span></span><span class="kr">fun</span> <span class="nf">reverse</span><span class="p">(</span><span class="n">L</span><span class="p">)</span> <span class="p">=</span>
+    <span class="kr">let</span> <span class="kr">fun</span> <span class="nf">helprev</span> <span class="p">(</span><span class="n">nil</span><span class="p">,</span> <span class="n">acc</span><span class="p">)</span> <span class="p">=</span> <span class="n">acc</span>
+          <span class="p">|</span> <span class="nf">helprev</span> <span class="p">(</span><span class="n">h::t</span><span class="p">,</span> <span class="n">acc</span><span class="p">)</span> <span class="p">=</span> <span class="n">helprev</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">h::acc</span><span class="p">)</span>
+    <span class="kr">in</span>
+      <span class="n">helprev</span><span class="p">(</span><span class="n">L</span><span class="p">,[])</span>
+    <span class="kr">end</span>
+</pre></div>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 7.5</strong></p>
+<p>Write the reverse predicate using a helper predicate to make a linear time reverse using the accumulator pattern.</p>
+<p><a class="reference internal" href="#exercise7-5"><span class="std std-ref">You can check your answer(s) here.</span></a></p>
+</div>
+</div>
+<div class="section" id="built-in-predicates">
+<h2>7.6. Built-in Predicates<a class="headerlink" href="#built-in-predicates" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="unification-and-arithmetic">
+<h2>7.7. Unification and Arithmetic<a class="headerlink" href="#unification-and-arithmetic" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nv">Singleton</span> <span class="nn">variables</span><span class="p">:</span> <span class="p">[</span><span class="nv">X</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 7.6</strong></p>
+<p>Write a length predicate that computes the length of a list.</p>
+<p><a class="reference internal" href="#exercise7-6"><span class="std std-ref">You can check your answer(s) here.</span></a></p>
+</div>
+</div>
+<div class="section" id="input-and-output">
+<h2>7.8. Input and Output<a class="headerlink" href="#input-and-output" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="example-7-8">
+<h3>7.8.1. Example 7.8<a class="headerlink" href="#example-7-8" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="s s-Atom">?</span> <span class="o">-</span> <span class="nf">readln</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="s s-Atom">lowercase</span><span class="p">).</span>
+</pre></div>
+</div>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="p">|</span><span class="s s-Atom">:</span> <span class="o">+</span> <span class="mi">5</span> <span class="nv">S</span> <span class="nv">R</span>
+<span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="s s-Atom">+</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="s s-Atom">s</span><span class="p">,</span> <span class="s s-Atom">r</span><span class="p">]</span> <span class="p">;</span>
+<span class="nv">No</span>
+<span class="s s-Atom">?-</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-7-9">
+<h3>7.8.2. Example 7.9<a class="headerlink" href="#example-7-9" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="s s-Atom">?-</span> <span class="nf">print</span><span class="p">(</span><span class="nv">X</span><span class="p">).</span>
+<span class="k">_</span><span class="nv">G180</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="k">_</span><span class="nv">G180</span> <span class="p">;</span>
+<span class="nv">No</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="structures">
+<h2>7.9. Structures<a class="headerlink" href="#structures" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="example-7-10">
+<h3>7.9.1. Example 7.10<a class="headerlink" href="#example-7-10" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">btnode</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span>
+  <span class="nf">btnode</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span>
+    <span class="nf">btnode</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s s-Atom">nil</span><span class="p">,</span> <span class="s s-Atom">nil</span><span class="p">),</span>
+    <span class="nf">btnode</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s s-Atom">nil</span><span class="p">,</span> <span class="s s-Atom">nil</span><span class="p">)),</span>
+  <span class="nf">btnode</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span>
+    <span class="nf">btnode</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="s s-Atom">nil</span><span class="p">,</span> <span class="s s-Atom">nil</span><span class="p">),</span>
+    <span class="nf">btnode</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="s s-Atom">nil</span><span class="p">,</span>
+      <span class="nf">btnode</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s s-Atom">nil</span><span class="p">,</span> <span class="s s-Atom">nil</span><span class="p">))))</span>
+</pre></div>
+</div>
+<div class="figboxcenter docutils container">
+<div class="figure">
+<img alt="_images/bst.png" src="_images/bst.png" />
+</div>
+<p><strong>Fig. 7.4</strong> Search Tree</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 7.7</strong></p>
+<p>Write a lookup predicate that looks up a value in a binary search tree like the kind defined in example 7.10.</p>
+<p><a class="reference internal" href="#exercise7-7"><span class="std std-ref">You can check your answer(s) here.</span></a></p>
+</div>
+</div>
+</div>
+<div class="section" id="parsing-in-prolog">
+<h2>7.10. Parsing in Prolog<a class="headerlink" href="#parsing-in-prolog" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="example-7-11">
+<h3>7.10.1. Example 7.11<a class="headerlink" href="#example-7-11" title="Permalink to this headline">¶</a></h3>
+<p>Sentence ::= Subject Predicate .</p>
+<p>Subject ::= Determiner Noun</p>
+<p>Predicate ::= Verb | Verb Subject</p>
+<p>Determiner ::= a | the</p>
+<p>Noun ::= professor | home | group</p>
+<p>Verb ::= walked | discovered | jailed</p>
+<div class="exercise docutils container">
+<p><strong>Practice 7.8</strong></p>
+<p>Construct the parse tree for “the professor discovered a group.” using the grammar in example 7.11.</p>
+<p><a class="reference internal" href="#exercise7-8"><span class="std std-ref">You can check your answer(s) here.</span></a></p>
+</div>
+</div>
+<div class="section" id="example-7-12">
+<h3>7.10.2. Example 7.12<a class="headerlink" href="#example-7-12" title="Permalink to this headline">¶</a></h3>
+<div class="figbox docutils container">
+<div class="figure">
+<img alt="_images/prologsen.png" src="_images/prologsen.png" />
+</div>
+<p><strong>Fig. 7.5</strong> A Transition Graph</p>
+</div>
+<div class="figboxcenter docutils container">
+<div class="figure">
+<img alt="_images/prologsub2.png" src="_images/prologsub2.png" />
+</div>
+<p><strong>Fig. 7.6</strong> Sentence Structure</p>
+</div>
+<div class="figbox docutils container">
+<div class="figure">
+<img alt="_images/prologsennum.png" src="_images/prologsennum.png" />
+</div>
+<p><strong>Fig. 7.7</strong> Labeled Graph</p>
+</div>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">the</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">).</span>
+<span class="nf">professor</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">).</span>
+<span class="nf">discovered</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">).</span>
+<span class="nf">a</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">).</span>
+<span class="nf">group</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">).</span>
+<span class="nf">period</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">).</span>
+</pre></div>
+</div>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">subject</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">determiner</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">M</span><span class="p">),</span> <span class="nf">noun</span><span class="p">(</span><span class="nv">M</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+</pre></div>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 7.9</strong></p>
+<p>Construct the predicates for the rest of the grammar.</p>
+<p><a class="reference internal" href="#exercise7-9"><span class="std std-ref">You can check your answer(s) here.</span></a></p>
+</div>
+</div>
+<div class="section" id="example-7-13">
+<h3>7.10.3. Example 7.13<a class="headerlink" href="#example-7-13" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="s s-Atom">?-</span> <span class="nf">sentence</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">).</span>
+<span class="s s-Atom">yes</span>
+<span class="s s-Atom">?</span> <span class="o">-</span> <span class="nf">sentence</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="nv">Y</span><span class="p">).</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="nv">Y</span> <span class="o">=</span> <span class="mi">7</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-7-14">
+<h3>7.10.4. Example 7.14<a class="headerlink" href="#example-7-14" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<div class="figure">
+<img alt="_images/sengraph.png" src="_images/sengraph.png" />
+</div>
+<p><strong>Fig. 7.8</strong> An Upside Down Parse Tree</p>
+</div>
+</div>
+<div class="section" id="difference-lists">
+<h3>7.10.5. Difference Lists<a class="headerlink" href="#difference-lists" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="example-7-15">
+<h3>7.10.6. Example 7.15<a class="headerlink" href="#example-7-15" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<div class="figure">
+<img alt="_images/difflists.png" src="_images/difflists.png" />
+</div>
+<p><strong>Fig. 7.9</strong> Difference Lists</p>
+</div>
+</div>
+<div class="section" id="example-7-16">
+<h3>7.10.7. Example 7.16<a class="headerlink" href="#example-7-16" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">c</span><span class="p">([</span><span class="nv">H</span><span class="p">|</span><span class="nv">T</span><span class="p">],</span><span class="nv">H</span><span class="p">,</span><span class="nv">T</span><span class="p">).</span>
+</pre></div>
+</div>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">determiner</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">c</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="s s-Atom">a</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+<span class="nf">determiner</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">):-</span> <span class="nf">c</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="s s-Atom">the</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+
+<span class="nf">noun</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">c</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="s s-Atom">professor</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+<span class="nf">noun</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">c</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="s s-Atom">home</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+<span class="nf">noun</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">c</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="s s-Atom">group</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+
+<span class="nf">verb</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">c</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="s s-Atom">walked</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+<span class="nf">verb</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">c</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="s s-Atom">discovered</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+<span class="nf">verb</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">c</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="s s-Atom">jailed</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+</pre></div>
+</div>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="s s-Atom">?-</span> <span class="nf">sentence</span><span class="p">([</span><span class="s s-Atom">the</span><span class="p">,</span><span class="s s-Atom">professor</span><span class="p">,</span><span class="s s-Atom">discovered</span><span class="p">,</span><span class="s s-Atom">a</span><span class="p">,</span><span class="s s-Atom">group</span><span class="p">,</span><span class="s s-Atom">&#39;.&#39;</span><span class="p">],</span> <span class="p">[</span> <span class="p">]).</span>
+<span class="s s-Atom">yes</span>
+</pre></div>
+</div>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="s s-Atom">?-</span> <span class="nf">sentence</span><span class="p">(</span><span class="nv">S</span><span class="p">,[</span> <span class="p">]).</span>
+</pre></div>
+</div>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nv">Subject</span> <span class="s s-Atom">::=</span> <span class="nv">Determiner</span> <span class="nv">Noun</span> <span class="p">|</span> <span class="nv">Determiner</span> <span class="nv">Noun</span> <span class="nv">Subject</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="prolog-grammar-rules">
+<h2>7.11. Prolog Grammar Rules<a class="headerlink" href="#prolog-grammar-rules" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="example-7-17">
+<h3>7.11.1. Example 7.17<a class="headerlink" href="#example-7-17" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">sentence</span> <span class="o">--&gt;</span> <span class="s s-Atom">subject</span><span class="p">,</span> <span class="s s-Atom">predicate</span><span class="p">,[</span><span class="s s-Atom">&#39;.&#39;</span><span class="p">].</span>
+<span class="nf">subject</span> <span class="o">--&gt;</span> <span class="s s-Atom">determiner</span><span class="p">,</span> <span class="s s-Atom">noun</span><span class="p">.</span>
+<span class="nf">predicate</span> <span class="o">--&gt;</span> <span class="s s-Atom">verb</span><span class="p">,</span> <span class="s s-Atom">subject</span><span class="p">.</span>
+<span class="nf">determiner</span> <span class="o">--&gt;</span> <span class="p">[</span><span class="s s-Atom">a</span><span class="p">].</span>
+<span class="nf">determiner</span> <span class="o">--&gt;</span> <span class="p">[</span><span class="s s-Atom">the</span><span class="p">].</span>
+<span class="nf">noun</span> <span class="o">--&gt;</span> <span class="p">[</span><span class="s s-Atom">professor</span><span class="p">];</span> <span class="p">[</span><span class="s s-Atom">home</span><span class="p">];</span> <span class="p">[</span><span class="s s-Atom">group</span><span class="p">].</span>
+<span class="nf">verb</span> <span class="o">--&gt;</span> <span class="p">[</span><span class="s s-Atom">walked</span><span class="p">];</span> <span class="p">[</span><span class="s s-Atom">discovered</span><span class="p">];</span> <span class="p">[</span><span class="s s-Atom">jailed</span><span class="p">].</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="building-an-ast">
+<h2>7.12. Building an AST<a class="headerlink" href="#building-an-ast" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="example-7-18">
+<h3>7.12.1. Example 7.18<a class="headerlink" href="#example-7-18" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">sentence</span><span class="p">(</span><span class="nf">sen</span><span class="p">(</span><span class="nv">N</span><span class="p">,</span><span class="nv">P</span><span class="p">))</span> <span class="p">--&gt;</span> <span class="nf">subject</span><span class="p">(</span><span class="nv">N</span><span class="p">),</span> <span class="nf">predicate</span><span class="p">(</span><span class="nv">P</span><span class="p">),</span> <span class="p">[</span><span class="s s-Atom">&#39;.&#39;</span><span class="p">].</span>
+</pre></div>
+</div>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">sentence</span><span class="p">(</span><span class="nf">sen</span><span class="p">(</span><span class="nv">N</span><span class="p">,</span><span class="nv">P</span><span class="p">),</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">subject</span><span class="p">(</span><span class="nv">N</span><span class="p">,</span><span class="nv">K</span><span class="p">,</span><span class="nv">M</span><span class="p">),</span>
+                              <span class="nf">predicate</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span><span class="nv">M</span><span class="p">,</span><span class="nv">R</span><span class="p">),</span><span class="nf">c</span><span class="p">(</span><span class="nv">R</span><span class="p">,</span><span class="s s-Atom">&#39;.&#39;</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+</pre></div>
+</div>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="s s-Atom">?-</span> <span class="nf">sentence</span><span class="p">(</span><span class="nv">Tree</span><span class="p">,</span> <span class="p">[</span><span class="s s-Atom">the</span><span class="p">,</span><span class="s s-Atom">professor</span><span class="p">,</span><span class="s s-Atom">discovered</span><span class="p">,</span><span class="s s-Atom">a</span><span class="p">,</span><span class="s s-Atom">group</span><span class="p">,</span><span class="s s-Atom">&#39;.&#39;</span><span class="p">],[]).</span>
+<span class="nv">Tree</span> <span class="o">=</span> <span class="nf">sen</span><span class="p">(</span><span class="nf">sub</span><span class="p">(</span><span class="nf">det</span><span class="p">(</span><span class="s s-Atom">the</span><span class="p">),</span><span class="nf">noun</span><span class="p">(</span><span class="s s-Atom">professor</span><span class="p">)),</span>
+                 <span class="nf">pred</span><span class="p">(</span><span class="nf">verb</span><span class="p">(</span><span class="s s-Atom">discovered</span><span class="p">),</span><span class="nf">sub</span><span class="p">(</span><span class="nf">det</span><span class="p">(</span><span class="s s-Atom">a</span><span class="p">),</span><span class="nf">noun</span><span class="p">(</span><span class="s s-Atom">group</span><span class="p">))))</span>
+</pre></div>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 7.10</strong></p>
+<p>Write a grammar for the subset of English sentences presented in this text to parse sentences like the one above. Include parameters to build abstract syntax trees like the one above.</p>
+<p><a class="reference internal" href="#exercise7-10"><span class="std std-ref">You can check your answer(s) here.</span></a></p>
+</div>
+</div>
+</div>
+<div class="section" id="attribute-grammars">
+<h2>7.13. Attribute Grammars<a class="headerlink" href="#attribute-grammars" title="Permalink to this headline">¶</a></h2>
+<div class="figboxcenter docutils container">
+<div class="figure">
+<img alt="_images/attrtree.png" src="_images/attrtree.png" />
+</div>
+<p><strong>Fig. 7.10</strong> Annotated AST for + S 4 R</p>
+</div>
+<div class="figboxcenter docutils container">
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>AST = prog of AST
+    | add of AST * AST
+    | sub of AST * AST
+    | prod of AST * AST
+    | div of AST * AST
+    | negate of AST
+    | num of number
+    | store of AST
+    | recall
+</pre></div>
+</div>
+<p><strong>Fig. 7.11</strong> AST Definition</p>
+</div>
+<div class="section" id="example-7-19">
+<h3>7.13.1. Example 7.19<a class="headerlink" href="#example-7-19" title="Permalink to this headline">¶</a></h3>
+<div class="line-block">
+<div class="line"><img class="math" src="_images/math/9999025fd76bd850120ac1ade92d9d3506b1b118.png" alt="G=(\mathcal{N,T,P,}E)"/> where</div>
+<div class="line"><br /></div>
+<div class="line-block">
+<div class="line"><img class="math" src="_images/math/724d83072e964085df9eaf19fc4a138368293b5d.png" alt="\mathcal{N} = {E}"/></div>
+<div class="line"><img class="math" src="_images/math/0fbbdfac6cecc0028febce5330b6728ebf87f868.png" alt="\mathcal{T} = {S,R,number,~,+,-,*,/}"/></div>
+<div class="line"><img class="math" src="_images/math/44ad79f4db8277d12b1a6f5def2d30122c89b9b0.png" alt="\mathcal{P}"/> is defined by the set of productions</div>
+<div class="line"><br /></div>
+<div class="line"><img class="math" src="_images/math/4f3ecf216456b6792c35c02c81a29df3480a5f57.png" alt="E \rightarrow +~E~E \mid -~E~E \mid *~E~E \mid /~E~E \mid \sim E \mid S~E \mid R \mid number"/></div>
+</div>
+</div>
+<div class="figboxcenter docutils container">
+<div class="line-block">
+<div class="line">AST –&gt; Prog AST</div>
+<div class="line">(1)  AST1.min = 0</div>
+<div class="line">(2)  AST0.val = AST1.val</div>
+<div class="line"><br /></div>
+<div class="line">AST –&gt; op AST AST</div>
+<div class="line">(3)  AST1.min = AST0.min</div>
+<div class="line">(4)  AST2.min = AST1.mout</div>
+<div class="line">(5)  AST0.mout = AST2.mout</div>
+<div class="line">(6)  AST0.val = AST1.val op AST2.val</div>
+<div class="line-block">
+<div class="line">where op is one of +,-,*,/</div>
+<div class="line"><br /></div>
+</div>
+<div class="line">AST –&gt; Store AST</div>
+<div class="line">(7)  AST1.min = AST0.min</div>
+<div class="line">(8)  AST0.mout = AST1.val</div>
+<div class="line">(9)  AST0.val = AST1.val</div>
+<div class="line"><br /></div>
+<div class="line">AST –&gt; Negate AST</div>
+<div class="line">(10) AST1.min = AST0.min</div>
+<div class="line">(11) AST0.mout = AST1.mout</div>
+<div class="line">(12) AST0.val = -1 * AST1.val</div>
+<div class="line"><br /></div>
+<div class="line">AST –&gt; Recall</div>
+<div class="line">(13) AST0.val = AST0.min</div>
+<div class="line">(14) AST0.mout = AST0.min</div>
+<div class="line"><br /></div>
+<div class="line">AST –&gt; number</div>
+<div class="line">(15) AST0.mout = AST0.min</div>
+<div class="line">(16) AST0.val = number</div>
+</div>
+<p><strong>Fig. 7.12</strong> Attribute Grammar</p>
+</div>
+<div class="exercise docutils container">
+<p><strong>Practice 7.11</strong></p>
+<p>Justify the annotation of the tree given in figure 7.10 by stating which rule was used in assigning each of the attributes annotating the tree.</p>
+<p><a class="reference internal" href="#exercise7-11"><span class="std std-ref">You can check your answer(s) here.</span></a></p>
+</div>
+</div>
+<div class="section" id="synthesized-vs-inherited">
+<h3>7.13.2. Synthesized vs Inherited<a class="headerlink" href="#synthesized-vs-inherited" title="Permalink to this headline">¶</a></h3>
+<div class="exercise docutils container">
+<p><strong>Practice 7.12</strong></p>
+<p>Is the <em>min</em> attribute synthesized or inherited?
+Is the <em>mout</em> attribute synthesized or inherited?</p>
+<p><a class="reference internal" href="#exercise7-12"><span class="std std-ref">You can check your answer(s) here.</span></a></p>
+</div>
+</div>
+</div>
+<div class="section" id="chapter-summary">
+<h2>7.14. Chapter Summary<a class="headerlink" href="#chapter-summary" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="review-questions">
+<h2>7.15. Review Questions<a class="headerlink" href="#review-questions" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ol class="arabic simple">
+<li>What is a term made up of in Prolog? Give examples of both simple and complex terms.</li>
+<li>What is a predicate in Prolog?</li>
+<li>In Standard ML you can pattern match a list using (h::t). How do you pattern match a list in Prolog?</li>
+<li>According to the definition of append, which are the input and the output parameters to the predicate?</li>
+<li>How do you get more possible answers for a question posed to Prolog?</li>
+<li>In the expression <em>X = 6 * 5 + 4</em> why doesn’t <em>X</em> equal 34 when evaluated in Prolog? What does <em>X</em> equal? What would you write to get <em>X</em> equal to 34?</li>
+<li>Provide the calls to lookup to look up 7 in the binary tree in example 7.10 and figure 7.4. Be sure to write down the whole term that is passed to lookup each time. You can consult the answer to practice problem 7.7 to see the definition of the lookup predicate.</li>
+<li>What symbol is used in place of the <em>:-</em> when writing a grammar in Prolog?</li>
+<li>What is a synthesized atrribute?</li>
+<li>What is an inherited attribute?</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="exercises">
+<h2>7.16. Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline">¶</a></h2>
+<p>In these early exercises you should work with the relative database presented at the beginning of this chapter.</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first">Write a rule (i.e. predicate) that describes the relationship of a sibling. Then write a query to find out if Anne and Stephen are siblings. Then ask if Stephen and Michael are siblings. What is Prolog’s response?</p>
+</li>
+<li><p class="first">Write a rule that describes the relationship of a brother. Then write a query to find the brothers of sophusw. What is Prolog’s response?</p>
+</li>
+<li><p class="first">Write a rule that describes the relationship of a niece. Then write a query to find all nieces in the database. What is Prolog’s response?</p>
+</li>
+<li><p class="first">Write a predicate that describes the relationship of cousins.</p>
+</li>
+<li><p class="first">Write a predicate that describes the ancestor relationship.</p>
+</li>
+<li><p class="first">Write a predicate called odd that returns true if a list has an odd number of elements.</p>
+</li>
+<li><p class="first">Write a predicate that checks to see if a list is a palindrome.</p>
+</li>
+<li><p class="first">Show the substitution required to prove that sublist([a,b],[c,a,b]) is true. Use the definition in figure 7.3 and use the same method of proving it’s true.</p>
+</li>
+<li><p class="first">Write a predicate that computes the factorial of a number.</p>
+</li>
+<li><p class="first">Write a predicate that computes the nth fibonacci number in exponential time complexity.</p>
+</li>
+<li><p class="first">Write a predicate that computes the nth fibonacci number in linear time complexity.</p>
+</li>
+<li><p class="first">Write a predicate that returns true if a third list is the result of zipping two others together. For instance,</p>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">zipped</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="s s-Atom">a</span><span class="p">,</span><span class="s s-Atom">b</span><span class="p">,</span><span class="s s-Atom">c</span><span class="p">],[</span><span class="nf">pair</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s s-Atom">a</span><span class="p">),</span><span class="nf">pair</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s s-Atom">b</span><span class="p">),</span><span class="nf">pair</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="s s-Atom">c</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>should return true since zipping [1,2,3] and [a,b,c] would yield the list of pairs given above.</p>
+</li>
+<li><p class="first">Write a predicate that counts the number of times a specific atom appears in a list.</p>
+</li>
+<li><p class="first">Write a predicate that returns true if a list is three copies of the same sublist. For instance, the predicate should return true if called as</p>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">threecopies</span><span class="p">([</span><span class="s s-Atom">a</span><span class="p">,</span> <span class="s s-Atom">b</span><span class="p">,</span> <span class="s s-Atom">c</span><span class="p">,</span> <span class="s s-Atom">a</span><span class="p">,</span> <span class="s s-Atom">b</span><span class="p">,</span> <span class="s s-Atom">c</span><span class="p">,</span> <span class="s s-Atom">a</span><span class="p">,</span> <span class="s s-Atom">b</span><span class="p">,</span> <span class="s s-Atom">c</span><span class="p">]).</span>
+</pre></div>
+</div>
+<p>It should also return true if it were called like</p>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">threecopies</span><span class="p">([</span><span class="s s-Atom">a</span><span class="p">,</span><span class="s s-Atom">b</span><span class="p">,</span><span class="s s-Atom">c</span><span class="p">,</span><span class="s s-Atom">d</span><span class="p">,</span><span class="s s-Atom">a</span><span class="p">,</span><span class="s s-Atom">b</span><span class="p">,</span><span class="s s-Atom">c</span><span class="p">,</span><span class="s s-Atom">d</span><span class="p">,</span><span class="s s-Atom">a</span><span class="p">,</span><span class="s s-Atom">b</span><span class="p">,</span><span class="s s-Atom">c</span><span class="p">,</span><span class="s s-Atom">d</span><span class="p">]).</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Implement insert, lookup, and delete on a binary search tree. The structure of a binary search tree was discussed in this chapter. Your main <em>run</em> predicate should be this:</p>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">buildtree</span><span class="p">(</span><span class="nv">T</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">readln</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="s s-Atom">lowercase</span><span class="p">),</span> <span class="nf">processlist</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span><span class="s s-Atom">nil</span><span class="p">,</span><span class="nv">T</span><span class="p">).</span>
+
+<span class="nf">run</span> <span class="o">:-</span> <span class="nf">print</span><span class="p">(</span><span class="s s-Atom">&#39;Please enter integers to build a tree: &#39;</span><span class="p">),</span> <span class="nf">buildtree</span><span class="p">(</span><span class="nv">T</span><span class="p">),</span>
+       <span class="nf">print</span><span class="p">(</span><span class="s s-Atom">&#39;Here is the tree:&#39;</span><span class="p">),</span> <span class="nf">print</span><span class="p">(</span><span class="nv">T</span><span class="p">),</span> <span class="nf">print</span><span class="p">(</span><span class="s s-Atom">&#39;\n&#39;</span><span class="p">),</span>
+       <span class="nf">print</span><span class="p">(</span><span class="s s-Atom">&#39;Now enter integers to delete: &#39;</span><span class="p">),</span> <span class="nf">readln</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="s s-Atom">lowercase</span><span class="p">),</span>
+       <span class="nf">delListFromTree</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span><span class="nv">T</span><span class="p">,</span><span class="nv">DT</span><span class="p">),</span> <span class="nf">print</span><span class="p">(</span><span class="nv">DT</span><span class="p">).</span>
+</pre></div>
+</div>
+<p>The <em>run</em> predicate calls the <em>buildTree</em> predicate to build the binary search tree from the list read by the readline. If <em>5 8 2 10</em> is entered at the keyboard, <em>L</em> would be the list containing those numbers. To complete this project there should be at least three predicates: <em>insert</em>, <em>lookup</em>, and <em>delFromTree</em>.</p>
+<p>The <em>lookup</em> predicate was a practice problem and the solution is provided if you need it. The <em>insert</em> predicate is somewhat like the <em>lookup</em> predicate except that a new node is constructed when you reach a leaf. Deleting a node is simliar to looking it up except that if it is found, the tree is altered to delete the node. Deleting a node from a binary search tree has three cases.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>The node to delete is a leaf node. If this is the case, then deleting it is simple because you just return an empty tree. In figure 7.4 this occurs when 2,4,7, or 10 is deleted.</li>
+<li>The node to delete has one child. If this is the case, then the result of deleting the node is the subtree under the deleted node. In figure 7.4, if the 9 is deleted, then the 10 is just moved up to replace the 9 in the tree.</li>
+<li>The node to delete has two children. If this is the case, then you have to do two things. First, find the left-most value from the right subtree. Then, delete the left-most value from the right subtree and return a new tree with the left-most value of the right subtree at its root. Consider delete 5 from figure 7.4. The left-most value of the right subtree is 7. To delete 5 we put the 7 at the root of the tree and then delete 7 from the right subtree.</li>
+</ol>
+</div></blockquote>
+<p>To make this project easy, write it incrementally. Print the results as you go so you can see what works and what doesn’t. The print predicate will print its argument while the nl predicate will print a newline. Don’t start by writing the entire <em>run</em> predicate right away. Write one piece at a time, test it, and then move on to the next piece.</p>
+</li>
+<li><p class="first">Implement a calculator prefix expression interpreter in Prolog as described in the section on attribute grammars in this chapter. The interpreter will read an expression from the keyboard and print its result. The interpreter should start with a <em>calc</em> predicate. Here is the <em>calc</em> predicate to get you started.</p>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">calc</span> <span class="o">:-</span> <span class="nf">readln</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="s s-Atom">lowercase</span><span class="p">),</span> <span class="nf">preprocess</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span><span class="nv">PreL</span><span class="p">),</span> <span class="nf">print</span><span class="p">(</span><span class="nv">PreL</span><span class="p">),</span> <span class="s s-Atom">nl</span><span class="p">,</span>
+        <span class="nf">expr</span><span class="p">(</span><span class="nv">Tree</span><span class="p">,</span><span class="nv">PreL</span><span class="p">,[]),</span> <span class="nf">print</span><span class="p">(</span><span class="nv">Tree</span><span class="p">),</span> <span class="s s-Atom">nl</span><span class="p">,</span> <span class="nf">interpret</span><span class="p">(</span><span class="nv">Tree</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="nv">Val</span><span class="p">),</span>
+        <span class="nf">print</span><span class="p">(</span><span class="nv">Val</span><span class="p">),</span> <span class="s s-Atom">nl</span><span class="p">.</span>
+</pre></div>
+</div>
+<p>The program reads a list of tokens from the keyboard. The <em>preprocess</em> predicate should take the list of values and add <em>num</em> tags to any number it finds in the list. This makes writing the grammar a lot easier. Any number like <em>6</em> in <em>L</em> should be replaced by <em>num((6)</em> in the list <em>PreL</em>. The <em>expr</em> predicate represents the start symbol of your grammar. Finally, the <em>interpret</em> predicate is the <em>attribute grammar</em> evaluation of the AST represented by <em>Tree</em>.</p>
+<p>To make this project easy, write it incrementally. Print the results as you go so you can see what works and what doesn’t. The print predicate will print its argument while the nl predicate will print a newline.  Don’t write the entire <em>calc</em> predicate right away. Write one piece, test it, and then move on to the next piece.</p>
+</li>
+</ol>
+</div></blockquote>
+</div>
+<div class="section" id="solutions-to-practice-problems">
+<h2>7.17. Solutions to Practice Problems<a class="headerlink" href="#solutions-to-practice-problems" title="Permalink to this headline">¶</a></h2>
+<p>These are solutions to the practice problem s. You should only consult these answers after you have tried each of them for yourself first. Practice problems  are meant to help reinforce the material you have just read so make use of them.</p>
+<div class="section" id="solution-to-practice-problem-7-1">
+<span id="exercise7-1"></span><h3>7.17.1. Solution to Practice Problem 7.1<a class="headerlink" href="#solution-to-practice-problem-7-1" title="Permalink to this headline">¶</a></h3>
+<p>Terms include atoms and variables. Atoms include sophus, fred, sophusw, kent, johan, mads, etc.
+Atoms start with a lowercase letter. Variables start with a capital letter and include X and Y from the example.</p>
+</div>
+<div class="section" id="solution-to-practice-problem-7-2">
+<span id="exercise7-2"></span><h3>7.17.2. Solution to Practice Problem 7.2<a class="headerlink" href="#solution-to-practice-problem-7-2" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ol class="arabic simple">
+<li><em>brother(X,Y) :- father(Z,X), father(Z,Y), male(X).</em></li>
+<li><em>sister(X,Y) :- father(Z,X), father(Z,Y), female(X).</em></li>
+<li><em>grandparent(X,Y) :- parent(X,Z), parent(Z,Y).</em></li>
+<li><em>grandchild(X,Y) :- grandparent(Y,X).</em></li>
+</ol>
+</div></blockquote>
+<p>Grandparent and grandchild relationships are just the inverse of each other.</p>
+</div>
+<div class="section" id="solution-to-practice-problem-7-3">
+<span id="exercise7-3"></span><h3>7.17.3. Solution to Practice Problem 7.3<a class="headerlink" href="#solution-to-practice-problem-7-3" title="Permalink to this headline">¶</a></h3>
+<p>The complexity of append is O(n) in the length of the first list.</p>
+</div>
+<div class="section" id="solution-to-practice-problem-7-4">
+<span id="exercise7-4"></span><h3>7.17.4. Solution to Practice Problem 7.4<a class="headerlink" href="#solution-to-practice-problem-7-4" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">reverse</span><span class="p">([],[]).</span>
+<span class="nf">reverse</span><span class="p">([</span><span class="nv">H</span><span class="p">|</span><span class="nv">T</span><span class="p">],</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">reverse</span><span class="p">(</span><span class="nv">T</span><span class="p">,</span><span class="nv">RT</span><span class="p">),</span> <span class="nf">append</span><span class="p">(</span><span class="nv">RT</span><span class="p">,[</span><span class="nv">H</span><span class="p">],</span><span class="nv">L</span><span class="p">).</span>
+</pre></div>
+</div>
+<p>This predicate has O(<img class="math" src="_images/math/b3f3eaa34b1d5ebe3808600684699430c83cee7f.png" alt="n^2"/>) complexity since append is called n times and append is O(<img class="math" src="_images/math/e11f2701c4a39c7fe543a6c4150b421d50f1c159.png" alt="n"/>) complexity.</p>
+</div>
+<div class="section" id="solution-to-practice-problem-7-5">
+<span id="exercise7-5"></span><h3>7.17.5. Solution to Practice Problem 7.5<a class="headerlink" href="#solution-to-practice-problem-7-5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">reverseHelp</span><span class="p">([],</span><span class="nv">Acc</span><span class="p">,</span><span class="nv">Acc</span><span class="p">).</span>
+<span class="nf">reverseHelp</span><span class="p">([</span><span class="nv">H</span><span class="p">|</span><span class="nv">T</span><span class="p">],</span> <span class="nv">Acc</span><span class="p">,</span> <span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">reverseHelp</span><span class="p">(</span><span class="nv">T</span><span class="p">,[</span><span class="nv">H</span><span class="p">|</span><span class="nv">Acc</span><span class="p">],</span><span class="nv">L</span><span class="p">).</span>
+<span class="nf">reverse</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span><span class="nv">R</span><span class="p">):-</span><span class="nf">reverseHelp</span><span class="p">(</span><span class="nv">L</span><span class="p">,[],</span><span class="nv">R</span><span class="p">).</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-7-6">
+<span id="exercise7-6"></span><h3>7.17.6. Solution to Practice Problem 7.6<a class="headerlink" href="#solution-to-practice-problem-7-6" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">len</span><span class="p">([],</span><span class="mi">0</span><span class="p">).</span>
+<span class="nf">len</span><span class="p">([</span><span class="k">_</span><span class="p">|</span><span class="nv">T</span><span class="p">],</span><span class="nv">N</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">len</span><span class="p">(</span><span class="nv">T</span><span class="p">,</span><span class="nv">M</span><span class="p">),</span> <span class="nv">N</span> <span class="o">is</span> <span class="nv">M</span> <span class="o">+</span> <span class="mf">1.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-7-7">
+<span id="exercise7-7"></span><h3>7.17.7. Solution to Practice Problem 7.7<a class="headerlink" href="#solution-to-practice-problem-7-7" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">lookup</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="nf">btnode</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="k">_</span><span class="p">)).</span>
+<span class="nf">lookup</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="nf">btnode</span><span class="p">(</span><span class="nv">Val</span><span class="p">,</span><span class="nv">Left</span><span class="p">,</span><span class="k">_</span><span class="p">))</span> <span class="p">:-</span> <span class="nv">X</span> <span class="o">&lt;</span> <span class="nv">Val</span><span class="p">,</span> <span class="nf">lookup</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="nv">Left</span><span class="p">).</span>
+<span class="nf">lookup</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="nf">btnode</span><span class="p">(</span><span class="nv">Val</span><span class="p">,</span><span class="k">_</span><span class="p">,</span><span class="nv">Right</span><span class="p">))</span> <span class="p">:-</span> <span class="nv">X</span> <span class="o">&gt;</span> <span class="nv">Val</span><span class="p">,</span> <span class="nf">lookup</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="nv">Right</span><span class="p">).</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-7-8">
+<span id="exercise7-8"></span><h3>7.17.8. Solution to Practice Problem 7.8<a class="headerlink" href="#solution-to-practice-problem-7-8" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<div class="figure">
+<img alt="_images/profparsetree.png" src="_images/profparsetree.png" />
+</div>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-7-9">
+<span id="exercise7-9"></span><h3>7.17.9. Solution to Practice Problem 7.9<a class="headerlink" href="#solution-to-practice-problem-7-9" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">sentence</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">subject</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">M</span><span class="p">),</span> <span class="nf">predicate</span><span class="p">(</span><span class="nv">M</span><span class="p">,</span><span class="nv">N</span><span class="p">),</span> <span class="nf">period</span><span class="p">(</span><span class="nv">N</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+<span class="nf">subject</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">determiner</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">M</span><span class="p">),</span> <span class="nf">noun</span><span class="p">(</span><span class="nv">M</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+<span class="nf">predicate</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">verb</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">M</span><span class="p">),</span> <span class="nf">subject</span><span class="p">(</span><span class="nv">M</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+<span class="nf">determiner</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">a</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">);</span> <span class="nf">the</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+<span class="nf">verb</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">discovered</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">);</span> <span class="nf">jailed</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">);</span> <span class="nf">walked</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+<span class="nf">noun</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">professor</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">);</span> <span class="nf">group</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">);</span> <span class="nf">home</span><span class="p">(</span><span class="nv">K</span><span class="p">,</span><span class="nv">L</span><span class="p">).</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-7-10">
+<span id="exercise7-10"></span><h3>7.17.10. Solution to Practice Problem 7.10<a class="headerlink" href="#solution-to-practice-problem-7-10" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-prolog notranslate"><div class="highlight"><pre><span></span><span class="nf">sentence</span><span class="p">(</span><span class="nf">sen</span><span class="p">(</span><span class="nv">N</span><span class="p">,</span><span class="nv">P</span><span class="p">))</span> <span class="p">--&gt;</span> <span class="nf">subject</span><span class="p">(</span><span class="nv">N</span><span class="p">),</span> <span class="nf">predicate</span><span class="p">(</span><span class="nv">P</span><span class="p">),</span> <span class="p">[</span><span class="s s-Atom">&#39;.&#39;</span><span class="p">].</span>
+<span class="nf">subject</span><span class="p">(</span><span class="nf">sub</span><span class="p">(</span><span class="nv">D</span><span class="p">,</span><span class="nv">N</span><span class="p">))</span> <span class="p">--&gt;</span> <span class="nf">determiner</span><span class="p">(</span><span class="nv">D</span><span class="p">),</span> <span class="nf">noun</span><span class="p">(</span><span class="nv">N</span><span class="p">).</span>
+<span class="nf">predicate</span><span class="p">(</span><span class="nf">pred</span><span class="p">(</span><span class="nv">V</span><span class="p">,</span><span class="nv">S</span><span class="p">))</span> <span class="p">--&gt;</span> <span class="nf">verb</span><span class="p">(</span><span class="nv">V</span><span class="p">),</span> <span class="nf">subject</span><span class="p">(</span><span class="nv">S</span><span class="p">).</span>
+<span class="nf">determiner</span><span class="p">(</span><span class="nf">det</span><span class="p">(</span><span class="s s-Atom">the</span><span class="p">))</span> <span class="p">--&gt;</span> <span class="p">[</span><span class="s s-Atom">the</span><span class="p">].</span>
+<span class="nf">determiner</span><span class="p">(</span><span class="nf">det</span><span class="p">(</span><span class="s s-Atom">a</span><span class="p">))</span> <span class="p">--&gt;</span> <span class="p">[</span><span class="s s-Atom">a</span><span class="p">].</span>
+<span class="nf">noun</span><span class="p">(</span><span class="nf">noun</span><span class="p">(</span><span class="s s-Atom">professor</span><span class="p">))</span> <span class="p">--&gt;</span> <span class="p">[</span><span class="s s-Atom">professor</span><span class="p">].</span>
+<span class="nf">noun</span><span class="p">(</span><span class="nf">noun</span><span class="p">(</span><span class="s s-Atom">home</span><span class="p">))</span> <span class="p">--&gt;</span> <span class="p">[</span><span class="s s-Atom">home</span><span class="p">].</span>
+<span class="nf">noun</span><span class="p">(</span><span class="nf">noun</span><span class="p">(</span><span class="s s-Atom">group</span><span class="p">))</span> <span class="p">--&gt;</span> <span class="p">[</span><span class="s s-Atom">group</span><span class="p">].</span>
+<span class="nf">verb</span><span class="p">(</span><span class="nf">verb</span><span class="p">(</span><span class="s s-Atom">walked</span><span class="p">))</span> <span class="p">--&gt;</span> <span class="p">[</span><span class="s s-Atom">walked</span><span class="p">].</span>
+<span class="nf">verb</span><span class="p">(</span><span class="nf">verb</span><span class="p">(</span><span class="s s-Atom">discovered</span><span class="p">))</span> <span class="p">--&gt;</span> <span class="p">[</span><span class="s s-Atom">discovered</span><span class="p">].</span>
+<span class="nf">verb</span><span class="p">(</span><span class="nf">verb</span><span class="p">(</span><span class="s s-Atom">jailed</span><span class="p">))</span> <span class="p">--&gt;</span> <span class="p">[</span><span class="s s-Atom">jailed</span><span class="p">].</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-7-11">
+<span id="exercise7-11"></span><h3>7.17.11. Solution to Practice Problem 7.11<a class="headerlink" href="#solution-to-practice-problem-7-11" title="Permalink to this headline">¶</a></h3>
+<div class="figboxcenter docutils container">
+<div class="figure">
+<img alt="_images/attrtreejustify.png" src="_images/attrtreejustify.png" />
+</div>
+</div>
+</div>
+<div class="section" id="solution-to-practice-problem-7-12">
+<span id="exercise7-12"></span><h3>7.17.12. Solution to Practice Problem 7.12<a class="headerlink" href="#solution-to-practice-problem-7-12" title="Permalink to this headline">¶</a></h3>
+<p>The <em>val</em> attribute is synthesized. The <em>min</em> value is inherited. The <em>mout</em> value is synthesized.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="typeinference.html" title="8. Type Inference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="usingsml.html" title="6. Compiling Standard ML"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Foundations of Programming Languages Second Edition</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Kent D. Lee.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

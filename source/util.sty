@@ -1,0 +1,190 @@
+%!TEX root =  Programming Languages.tex
+\usepackage{graphics}
+\usepackage{color}
+
+\def\@makechapterhead#1{%
+  \vspace*{1\p@}%
+  {\parindent \z@ \raggedright \normalfont
+    \if@mainmatter
+    	\ifnum \c@secnumdepth >\m@ne
+        		\bfseries \@chapapp\space \huge\thechapter
+        		\vskip 1\p@
+        		\rule{\textwidth}{1pt}
+        		\par\nobreak
+        		\vskip 10\p@
+    	\fi
+
+%%	\interlinepenalty\@M
+    	\Huge \bfseries #1\par\nobreak
+    	\vskip 40\p@
+   \else
+    	\ifnum \c@secnumdepth >\m@ne
+        		\bfseries \huge #1 \space
+        		\vskip 1\p@
+        		\rule{\textwidth}{1pt}
+        		\par\nobreak
+        		\vskip 10\p@
+    	\fi
+  \fi
+    
+  }}
+
+
+\definecolor{light}{gray}{.75}
+\newcounter{kdlexample}[chapter]
+\newcounter{sectionnum}
+\newcounter{appendix}
+\newcounter{appsecnum}
+\setcounter{appendix}{0}
+\newcounter{kdlexercise}[chapter]
+
+\renewcommand{\thekdlexample}{\thechapter.\arabic{kdlexample}}
+
+\renewcommand{\thekdlexercise}{\thechapter.\arabic{kdlexercise}}
+
+\renewcommand{\theappendix}{\Alph{appendix}}
+
+\renewcommand{\theappsecnum}{\Alph{appendix}.\arabic{appsecnum}}
+
+\newtheorem{exercisethm}{}[chapter]
+\newtheorem{examplethm}{}[chapter]
+
+%\newcommand{\example}{example~\thechapter.}
+\newcommand{\practice}{practice problem }
+\newcommand{\practices}{practice problems }
+\newcommand{\Practice}{Practice problem }
+\newcommand{\Practices}{Practice problems }
+\newcommand{\slidebreak}{}
+
+\newcommand{\kdlsolution}[1]{
+  \vspace{12pt}
+  {\bf\large\noindent Solution to Practice Problem~\ref{#1}}
+  \vspace{12pt}
+}
+
+\newcommand{\beameronly}[1]{}
+
+\newcommand{\blurb}[1]{#1}
+
+\newcommand{\slideheading}[1]{}
+
+
+\newcommand{\newchapter}[1]{
+  \setcounter{sectionnum}{0}
+  
+  \pagestyle{fancy}
+  \fancyhead{}
+  \fancyfoot{}
+  \fancypagestyle{plain}{
+  	\fancyhf{}
+	\fancyfoot[R]{\bfseries\large\thepage}
+	\renewcommand{\headrulewidth}{0pt}
+	\renewcommand{\footskip}{60pt}}
+  \if @mainmatter
+    \fancyhead[LE]{\bf{\large\thepage} ~~~ Chapter \thechapter  ~~~ #1}
+  \else
+    \fancyhead[LE]{\bf{\large\thepage} ~~~ #1}
+  \fi
+ % \fancyhead[RO]{\bf{\large\thepage} ~~~ Chapter \thechapter  ~~~ #1}
+  \setlength{\leftmargin}{4cm}
+  \chapter{#1}
+  }
+  
+\newcommand{\newappendix}[1]{
+  \refstepcounter{appendix}
+  \setcounter{appsecnum}{0}
+  \renewcommand{\thesection}{\Alph{appendix}.\arabic{appsecnum}}
+  
+  \pagestyle{fancy}
+  \fancyhead{}
+  \fancyfoot{}
+  \fancypagestyle{plain}{
+  	\fancyhf{}
+	\fancyfoot[R]{\bfseries\large\thepage}
+	\renewcommand{\headrulewidth}{0pt}
+	\renewcommand{\footskip}{60pt}}
+  \if @mainmatter
+    \fancyhead[LE]{\bf{\large\thepage} ~~~ Appendix \theappendix  ~~~ #1}
+  \else
+    \fancyhead[LE]{\bf{\large\thepage} ~~~ Appendix \theappendix ~~~ #1}
+  \fi
+  \setlength{\leftmargin}{4cm}
+  \chapter{Appendix \theappendix \newline #1}
+  }
+
+\newcommand{\newsection}[1]{
+  \refstepcounter{sectionnum}
+%  \addtocounter{sectionnum}{1}
+  \section{ #1}
+  \fancyfoot{}
+  \fancyhead[RO]{\bf\thechapter.\thesectionnum ~~~ #1 ~~~ {\bf\large\thepage}}
+}
+
+\newcommand{\newappsec}[1]{
+  \refstepcounter{appsecnum}
+%  \addtocounter{sectionnum}{1}
+  \fancyfoot{}
+  \fancyhead[RO]{\bf\theappsecnum ~~~ #1 ~~~ {\bf\large\thepage}}
+  \section{ #1}
+}
+
+%
+%\newcommand{\newappendix}{
+%  \setcounter{sectionnum}{0}
+%  \refstepcounter{appendix}
+%  \setcounter{chapter}{\theappendix}
+%  
+%  \pagestyle{fancy}
+%  \fancyhead{}
+%  \fancyfoot{}
+%  \fancypagestyle{plain}{
+%  	\fancyhf{}
+%	\fancyfoot[R]{\bfseries\large\thepage}
+%	\renewcommand{\headrulewidth}{0pt}
+%	\renewcommand{\footskip}{60pt}}
+%  \fancyhead[LE]{\bf{\large\thepage} ~~~ Appendix \Alph{chapter}}
+% % \fancyhead[RO]{\bf{\large\thepage} ~~~ Chapter \thechapter  ~~~ #1}
+%  \setlength{\leftmargin}{4cm}
+%  \chapter{Appendix \Alph{chapter}}
+%  }
+
+%\newcommand{\newsection}[1]{
+%  \refstepcounter{sectionnum}
+%%  \addtocounter{sectionnum}{1}
+%  \fancyfoot{}
+%  \fancyhead[RO]{\bf\thechapter.\thesectionnum ~~~ #1 ~~~ {\bf\large\thepage}}
+%  \section{#1}
+%}
+
+\newenvironment{kdlexample}[1][~]{
+  \refstepcounter{kdlexample} 
+%  \begin{itemize}
+%  \item[]
+  \begin{itemize}
+  \item[\colorbox{light}{Example \thekdlexample}]  {\bf#1}
+  \linebreak\linebreak
+  }{
+  \end{itemize}
+%  \end{itemize}
+  }
+ 
+\newenvironment{kdlexercise}[1][~]{
+  \refstepcounter{kdlexercise}
+%  \begin{itemize}
+%  \item[] 
+  \begin{itemize}
+  \item[\includegraphics{pointingfinger.jpg}\colorbox{light}{Practice \thekdlexercise}]  {\bf#1}
+  \linebreak\linebreak
+  }{
+  \end{itemize}
+  }
+  
+  \newenvironment{kdlsol}{
+  \begin{itemize}
+  \item[] 
+  }{
+  \end{itemize}
+  }
+  
+  \newenvironment{kdlblt}{}
+  

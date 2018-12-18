@@ -1,0 +1,1842 @@
+ %!TEX root =  Programming Languages.tex
+  \newchapter{Functional Programming in Standard ML}
+  \label{functionalchap}
+  \lstset{language=ML,
+        numbers=left,
+        numberstyle=\tiny,
+        tabsize=3,
+        showspaces=false,
+        showstringspaces=false,
+        basicstyle=\ttfamily\small,
+        keywordstyle=\rmfamily\bfseries,
+        extendedchars=false,
+        frame=none,
+        captionpos=b,
+        firstnumber=1,
+        abovecaptionskip=\medskipamount,
+        upquote=true,
+        index=[1][]{}
+%        index=[1][keywords]
+ }
+ 
+\index{functional programming|(}
+\index{programming!functional|(}
+
+\blurb{As you might guess by the title, functional programming has something to do with programming with functions.
+}\blurb{However, what the title, {\bf Functional Programming}, doesn't say is what functional programming languages lack.
+}\blurb{Specifically, pure functional languages\index{functional language!pure} lack assignment statements\index{statement!assignment} and iteration\index{iteration}.
+}Iteration relates to the ability to iterate or repeat code as in a loop of some sort. It is impossible in a pure functional language to declare a variable that gets updated as your program executes! If you think about it, if there are no variables, then there isn't any reason for a looping construct in the language. Iteration and variables go hand in hand. But, how do you get any work done without variables? 
+\blurb{The primary mode of programming in a functional language is through recursion\index{recursion}. 
+}
+
+Functional languages also contain a feature that other languages don't. 
+\blurb{They allow functions to be passed to functions as parameters.
+}\blurb{We say that these functions are higher-order\index{function!higher-order}.
+}Higher-order functions take other functions as parameters and use them. There are many useful higher order functions that are derived from common patterns of computation. Particular instances of these patterns commonly have one small difference between them. If that small difference is left as a function to be defined later, we have one function that requires another function to complete its implementation. Higher-order functions may be customized by providing some of their functionality later. In some ways this is the functional equivalent of what inheritance\index{inheritance} or interfaces\index{interface} provide us in object-oriented languages. 
+
+\blurb{These two features, lack of variables and higher-order functions, drastically change the way in which you think about programming.
+}Programming recursively takes some time to get used to, but in the end it is a very nice way to program. \blurb{Programming recursively is more declarative\index{programming!declarative}.
+}\blurb{Writing imperative programs is prescriptive\index{programming!prescriptive}.
+}When programming declaratively we can focus on {\em what} we want to say about a problem instead of exactly {\em how} to solve a problem.
+
+\slidebreak
+
+\blurb{But why would we want to get rid of variables in a programming language?
+}The problem is that variables often make it hard to reason about our programs. 
+\blurb{Functional languages are more mathematical in nature and have certain rules like commutativity\index{commutative} and associativity\index{associative} that they follow.
+}\blurb{Rules like associativity and commutativity can make it easier to reason about our programs.
+}
+
+
+\begin{kdlexercise}
+\label{commutative}
+Is addition commutative in C++, Pascal, or Java?
+Will {\small\verb-write(a+b)-} always produce the same value as {\small\verb-write(b+a)-}?
+Consider the follow Pascal program (or almost a Pascal program, anyway).
+\begin{lstlisting}[language=Pascal]
+program P;   var b : integer;   function a() : integer;   begin       b:=b+2;       return 5   end;begin   b:=10;   write(a()+b)      (* or write(b+a()) *)end.
+\end{lstlisting}
+
+What does this program produce? What would it produce if the statement were {\small\verb-write(b+a())-}?
+\end{kdlexercise}
+ 
+ 
+\newsection{Imperative vs Functional Programming}
+You are probably familiar with at least one imperative language. Languages like C, C++, Java, Python, and Ruby are considered imperative languages\index{language!imperative} because the fundamental construct is the assignment statement. In each of these languages we declare variables and assign them values, updating those variables as a program's execution progresses. 
+
+\blurb{Imperative languages are heavily influenced by the von Neumann architecture\index{architecture!von Neumann} of computers that includes a store and an instruction counter; the computation model has control structures that iterate over instructions that make incremental modifications of memory.
+}Assignment of values to variables, for loops, and while loops are all part of imperative languages.
+\blurb{The principal operation is the assignment of values to variables.
+}Programs are statement oriented, and they carry out algorithms with statement level sequential control. In other words, computing is done by side-effects.
+
+Sometimes problems with imperative programs stem from these side-effects. It is difficult to reason about  a program that relies on side-effects. If we wish to reuse the code of an imperative program then we must be sure that the same conditions are true before the reused code executes since imperative code relies on a certain machine state. As programmers we sometimes forget which preconditions are required and what the postconditions of executing a segment of code might be and that can lead to bugs in our programs. 
+
+\blurb{Functional languages are based on the mathematical concept of a function and do not reflect the underlying von Neumann architecture.
+}\blurb{These languages are concerned with data objects and values instead of variables. 
+}\blurb{The principal operation is function application.
+}
+Functions are treated as first-class objects that may be stored in data structures, passed as parameters, and returned as function results.
+Primitive functions are generally supplied with the language implementation. Functional languages allow new functions to be defined by the programmer.
+
+\blurb{Functional program execution consists of the evaluation of an expression, and sequential control is replaced by recursion.
+}
+There is no assignment statement. Values are communicated primarily through the use of parameters and return values. Without variables, loop statements don't have a purpose and so they also don't exist in pure functional languages.
+
+Pure functional languages have no side-effects. If input and output are considered side-effects then the only pure functional programs are those that read no input and produce no output. In other words, according to this definition, the only pure functional programs are those that do nothing! Realistically, side-effects are avoided. 
+
+Scheme is generally considered a pure functional language even though it does include input and output as part of its definition. In general, pure functional languages like Scheme avoid or at least isolate code that performs input and output operations. More importantly, input and output operations in functional languages do not update the state of variables within a program. The only state update relates to the state of the stream of characters being read from or written to.
+
+What is amazing is that it has been proven that exactly the same things can be computed with functional languages as can be computed with imperative languages. This is known because a Turing machine, the theoretical basis for imperative programming and the design of the computer, have been proven equivalent in power to the Lambda Calculus, the basis for all functional programming languages.
+
+\newsection{The Lambda Calculus}
+\label{lambdacalculus}
+\blurb{All functional programming languages are derived either directly or indirectly from the work of Alonzo Church\index{Church!Alonzo} and Stephen Kleene\index{Kleene!Stephen}.
+}\blurb{The lambda calculus\index{lambda calculus} was defined by Church and Kleene in the 1930's, before computers existed.
+}At the time, mathematicians were interested in formally expressing computation in some written form other than English or other informal language. The lambda calculus was designed as a way of expressing those things that can be computed. 
+\blurb{It is a very small, functional programming language.
+}In the lambda calculus, a function is a mapping from the elements of a domain to the elements of a codomain given by a rule. Consider the function $cube(x) = x^3$. What is the value of the identifier $cube$ in the definition $cube(x) = x^3$? Can this function be defined without giving it a name?
+
+$\lambda x.x^3$  defines the function that maps each $x$ in the domain to $x^3$.
+We can say that this definition or {\em lambda abstraction},  $\lambda x.x^3$, is the value bound to the identifier $cube$. We say that $x^3$ is the {\em body} of the lambda abstraction\index{lambda abstraction}.
+Every lambda {\em abstraction} in lambda notation is a function of one identifier. However, lambda {\em expressions} may contain more than one identifier.
+
+\begin{kdlexample}
+\label{lambdaabs}
+The expression $y^2 + x$ can be expressed as a lambda abstraction in one of two ways:
+\begin{itemize}
+\item[] $\lambda x.\lambda y.y^2+x$
+\item[] $\lambda y.\lambda x.y^2+x$
+\end{itemize}
+In the first lambda abstraction the $x$ is the first parameter to be supplied to the expression. In the second lambda abstraction the $y$ is the parameter to get a value first. In either case, the abstraction is often abbreviated by throwing out the extra $\lambda$. In abbreviated form the two abstractions would become $\lambda xy.y^2+x$ and $\lambda yx.y^2+x$. 
+\end{kdlexample}
+
+\subsection{Normal Form}
+
+To say the lambda calculus, or any language, has a normal form\index{normal form} means that each expression that can be reduced has a simplest form. It means that we can reduce more complex expressions to simpler expressions in some mechanical way. The lambda calculus exhibits a property called {\em confluence\index{confluence}}. 
+
+Confluence means that one or more reduction strategies (or intermixing them) always leads to the same normal form of an expression, assuming the expression can be reduced by the reduction strategy. This property of confluence was proven in the Church-Rosser theorem\index{Church-Rosser theorem}.
+
+Function application (i.e. calling a function) in lambda notation is written with a lambda abstraction followed by the value to call the abstraction with. Such a combination is called a {\em redex}\index{redex}. 
+
+\begin{kdlexample}
+To call $\lambda x.x^3$ with the value 2 for $x$ we would write
+\[(\lambda x.x^3) 2\]
+This combination of lambda abstraction and value is called a {\em redex}.
+\end{kdlexample}
+
+A redex is a lambda expression that may be reduced. Typically a lambda expression contains several redexes that may be chosen to be reduced. Function application is left-associative meaning that if more than one redex is available at the same level of parenthetical nesting, the left-most redex must be reduced first. If the left-most outer-most redex is always chosen for reduction first, the order of reduction is called normal order reduction\index{reduction strategy!normal order}. When a redex is reduced by applying the lambda calculus equivalent of function application it is called a $\beta$-reduction (pronounced beta-reduction).
+
+\begin{kdlexample}
+\label{normalorder}
+This is the normal order reduction of $(\lambda xyz.xz(yz))(\lambda x.x)(\lambda xy.x)$. The redex to be $\beta$-reduced at each step is underlined.
+
+$\underline{(\lambda xyz.xz(yz))(\lambda x.x)}(\lambda xy.x)$\\
+$\Rightarrow\underline{(\lambda yz.(\lambda x.x)z(yz))(\lambda xy.x)}$\\
+$\Rightarrow\lambda z.\underline{(\lambda x.x)z}((\lambda xy.x)z)$\\
+$\Rightarrow\lambda z.z(\underline{(\lambda xy.x)z})$\\
+$\Rightarrow\lambda z.z(\lambda y.z)\Box$
+\end{kdlexample}
+
+\begin{kdlexercise}
+\label{applicativeorder}
+Another reduction strategy is called applicative order reduction\index{reduction strategy!applicative order}. Using this strategy, the left-most inner-most redex is always reduced first. Use this strategy to reduce the expression in example~\ref{normalorder}. Be sure to parenthesize your expression first so you are sure that you left-associate redexes. 
+ 
+\end{kdlexercise}
+
+In \practice\ref{applicativeorder} you should have reduced the lambda expression to the same reduced lambda expression seen in example~\ref{normalorder}. If you didn't, you did something wrong. If you want more experience with reducing lambda expressions you may wish to consult a lambda expression interpreter. One excellent interpreter was written by Peter Sestoft and is available on the web. It is located at {\small \verb+http://www.dina.dk/~sestoft/lamreduce/+}.
+
+\subsection{Problems with Applicative Order Reduction}
+Sometimes, applicative order reduction can lead to problems. For instance, consider the expression
+$(\lambda x.y)((\lambda x.xx)(\lambda x.xx))$.
+
+\begin{kdlexercise}
+\label{reduce}
+Reduce the expression $(\lambda x.y)((\lambda x.xx)(\lambda x.xx))$ with both normal order and applicative order reduction. Don't spend too much time on this! 
+\end{kdlexercise}
+
+This \practice shows why the definition of confluence above includes the phrase, {\em assuming the expression can be reduced by the reduction strategy}. Applicative order may not always result in the expression being reduced. No fear, if that happens we are free to use normal order reduction for a while since intermixing reduction strategies will not affect whether we arrive at the normal form for the expression or not. 
+ 
+\newsection{Getting Started with Standard ML}
+  
+Standard ML\index{Standard ML} (or just SML) is a functional language based on Lisp\index{Lisp} which in turn is based on the lambda calculus. Important ML features are listed below.
+
+\begin{itemize}
+\item SML is higher-order supporting functions as first-class values.
+\item It is strongly typed like Pascal, but more powerful since it supports polymorphic type checking\index{type checking!polymorphic}. With this strong type checking it is pretty infrequent that you need to debug your code!! What a great thing!!!
+\item Exception handling\index{exception handling} is built into Standard ML. 
+It provides a safe environment for code development and execution. This means there are no traditional pointers in ML. Pointers are handled like references in Java. 
+\item Since there are no traditional pointers, garbage collection\index{garbage collection} is implemented in the ML system. 
+\item Pattern-matching\index{pattern-matching} is provided for conveniently writing recursive functions. 
+\item There are built-in advanced data structures like lists and recursive data structures.
+\item A library of commonly used functions and data structures is available called the {\bf Basis Library}.
+\end{itemize}
+
+\blurb{There are several implementations of Standard ML.
+}\blurb{Standard ML of New Jersey and Moscow ML\index{Moscow ML} are the most complete and certainly the most popular.
+}There is also a SML.NET\index{SML.NET} implementation that targets the Microsoft .NET run-time library and can be integrated with other .NET languages. There is an MLj implementation that targets the Java Virtual Machine\index{Java Virtual Machine}. Poly/ML\index{Poly/ML} is another implementation that includes support for Windows programming. While many implementations exist, they all support the same definition of SML. If you write a Standard ML program that runs in one environment, it'll run on any other implementation as long as you are not using platform specific functions. 
+
+\blurb{SML has been successfully used on a variety of large programming projects.
+}\blurb{It was used to implement the entire TCP protocol~\cite{190318} on the FOX Project\index{FOX Project}.
+}It has been used to implement server side scripting on web servers. It was originally designed as a language to write theorem provers and has been used extensively in this area. It has been used in hardware design and verification. 
+\blurb{It has also been used in programming languages research. 
+}
+
+The rest of this chapter will introduce you to SML. By the end of the chapter you should understand and be able to use many of the important features of the language.  This text is based on the Standard ML of New Jersey implementation. You can download SML of New Jersey from {\small \verb+http://smlnj.org+}. SML of New Jersey is available for most platforms so you should be able to find an implementation for your needs.  You'll want to get the latest working version. 
+
+\blurb{Once you've installed SML you can open a terminal window and start the interpreter.
+}\blurb{Typing {\small \verb+sml+} at the command-line will start the interactive mode of the interpreter.
+}\blurb{Typing {\small \verb+ctl-d+} will terminate the interpreter.
+}You can type expressions and programs directly in at the interpreter's prompt or you can type them in a file and use that file within SML. To do this you type the word {\em use} as follows:
+\begin{lstlisting}[keywordstyle=,numbers=none]
+Standard ML of New Jersey v110.59 
+- use "myfile.txt";
+\end{lstlisting}
+
+SML will take whatever you have typed in the file and evaluate it just as if you had typed it directly into the interpreter. 
+
+You should use the examples and \practices in this chapter to learn SML. The following sections will introduce you to important aspects of SML and will get you ready to write more complicated programs in the next chapter. 
+
+\newsection{Expressions, Types, Structures, and Functions}
+  
+Functional programming focuses on the evaluation of expressions. In SML you can evaluate expressions right in the intepreter. When evaluating an expression you will notice that type information is displayed along with the result of the expression evaluation. 
+ \begin{kdlexample}
+ \label{simpleexp}
+ Here are some expression evaluations in SML.
+\begin{lstlisting}[keywordstyle=,numbers=none]
+ - 6;
+val it = 6 : int
+- 5*3;
+val it = 15 : int
+- ~1;
+val it = ~1 : int
+- 5.0 * 3.0;
+val it = 15.0 : real
+- true;
+val it = true : bool
+- 5 * 3.0;
+stdIn:6.1-6.8 Error: operator and operand don't agree [literal]
+  operator domain: int * int
+  operand:         int * real
+  in expression:
+    5 * 3.0
+- 
+\end{lstlisting}
+\end{kdlexample}
+
+In SML the identifier {\em it} is bound to the result of the last successfully evaluated expression. This is convenient if you want to use the result in a subsequent expression. You can refer to the previous result as {\em it}. 
+
+You might notice that a negative one is written as {\small \verb+~1+} in SML. While a little unconventional, {\small \verb+~+} is the unary negation operator in SML, distinguishing it from the binary subtraction operator. 
+
+SML has a very rigorous type system. In fact, the type system for SML has been proved sound. That means that any correctly typed program will be free of type errors. In addition, SML is statically typed. That means that all type errors are detected at {\em compile-time} and not at {\em run-time}. Robin Milner\index{Milner!Robin} proved this for Standard ML. ML is the only widely distributed language whose type system has been formally defined\cite{card96}. 
+
+While being formally defined and rigorous, the type system of ML is remarkably flexible. It is polymorphic\index{polymorphism}. We'll see what this means for us soon. Many of the types in ML are also implicitly expressed. You may notice in the example above that the programmer never entered any types for the expressions given there. This frees the programmer from having to key in most of the types in a program since they are mostly determined automatically. 
+
+You should have also noticed that there is a type error in example~\ref{simpleexp}. ML is polymorphic but it is also \index{type checking!strong}strongly typed. Since 5 is an integer in SML and 3.0 is a real, the two cannot be multiplied together. If you should have the need to multiply an integer and a real it can be done, but you must explicitly convert one of the types. 
+
+\begin{kdlexample}
+Here is some code to multiply an integer and a real, producing a real number.
+\begin{lstlisting}[keywordstyle=,numbers=none]
+- Real.fromInt(5) * 3.0;
+[autoloading]
+[library $SMLNJ-BASIS/basis.cm is stable]
+[autoloading done]
+val it = 15.0 : real
+- 
+\end{lstlisting}
+\end{kdlexample}
+
+The integer 5 is converted to 5.0 by calling a function called fromInt in the structure\index{ML!structure} called Real. A Structure in SML is a grouping of functions and types. It begins with {\em structure} {\small \verb+name =+} {\em struct} and ends with the keyword {\em end}. Everything after the {\em struct} and before the {\em end} is part of the structure. See appendix~\ref{calc.sml} for an example of this.
+
+There are several structures that are part of the basis library of SML. The basis library is available in SML when the interpreter is started. Some of these structures are listed in appendix~\ref{basislib}. The structures in the basis library include Bool, Int, Real, Char, String, and List. By referring to appendix~\ref{basislib} or looking on the web at {\small \verb+http://standardml.org/Basis+} you can see what functions are included in each of these structures. 
+
+A function in SML takes one or more arguments and returns a value. The signature of a function is the type of the function. In other words, a function's type is its signature. 
+
+\begin{kdlexample}
+The signature of the function {\small \verb+fromInt+} in the Real structure is 
+\begin{lstlisting}[keywordstyle=,numbers=none]
+  val fromInt : int -> real
+\end{lstlisting}
+The signature of {\small \verb+fromInt+} tells us that it takes an {\small \verb+int+} as an argument and returns a {\small \verb+real+}. From the name of the function, and the fact that it is part of the Real structure, we can ascertain that it makes a {\small \verb+real+} number from an {\small \verb+int+}.
+\end{kdlexample}
+The type on the left side of the arrow (i.e. the {\small \verb+->+}) is the type of the arguments given to the function. The type on the right side of the arrow is the type of the value returned by the function. The {\small \verb+fromInt+} function takes an {\small \verb+int+} as an argument and returns a {\small \verb+real+}.
+  
+\begin{kdlexercise}
+\label{express}
+Write expressions that compute the values described below. Consult the basis library in appendix~\ref{basislib} as needed.
+\begin{enumerate}
+\item Divide the integer bound to {\em x} by 6.
+\item Multiply the integer {\em x} and the real number {\em y} giving the closest integer as the result. 
+\item Divide the real number 6.3 into the real number bound to {\em x}.
+\item Compute the remainder of dividing integer {\em x} by integer {\em y}.
+\end{enumerate}
+\end{kdlexercise}
+  
+\newsection{Recursive Functions}
+
+Recursion\index{recursion} is the way to get things done in a functional language. Recursion happens when a function calls itself. Because of the principle of referential transparency a function must never call itself with the same arguments. If it were to do that, then the function would do exactly what it did the last time, call itself with the same arguments, which would then.... Well, you get the picture! 
+
+To spare ourselves from this problem we insist on two things happening. First, every recursive function must have a base case\index{recursion!base case}. A base case is a simple subproblem that we are trying to solve that doesn't require recursion. We must write some code that checks for the simple problem and simply returns the answer in that case. 
+
+The second rule of \index{recursion!inductive case}recursive functions requires them to call themselves on some simpler or smaller subproblem. In some way each recursive call should take a step toward the base case of the problem. If each recursive call advances toward the base case then by the mathematical principle of induction\index{induction} we can conclude the function will work for all values on which the function is defined! The trick is not to think about this too hard. The recursive case is often referred to as the inductive case.
+
+To define a function in SML we write the keyword {\small \verb+fun+} followed by a function name, parameters, an equal sign, and the body of the function. The syntax is quite similar to defining functions in other languages. The main difference is the body of the function. Instead of being a sequence of statements with variable assignment, the body of the function will be an expression.
+
+One important expression in SML is the {\em if-then-else} expression. This is not an {\em if-then-else} statement. Instead, it's an {\em if-then-else} expression. An {\em if-then-else} expression gives one of two values and those values must be type compatible.  The easiest way to understand {\em if-then-else} expressions is to see one in practice. 
+
+\begin{kdlexample}
+\label{babylonian}
+The Babylonian method\index{Babylonian method} of computing square root\index{square root} of a number, {\em x}, is to start with an arbitrary number as a {\em guess}. If $guess^2 = x$ we are done. If not, then let the next guess be $(guess + x/guess)/2.0$. To write this as a recursive function we must find a base case and be certain that our successive guesses will approach the base case. Since the Babylonian method of finding a square root is a well-known algorithm, we can be assured it will converge on the square root. The base case has to be written so that when we get close enough, we will be done. Let's let the {\em close enough} factor be one millionth of the original number. 
+
+The recursive function then looks like this:
+\begin{lstlisting}
+fun babsqrt(x,guess) = 
+  if Real.abs(x-guess*guess) < x/1000000.0 then
+    guess
+  else
+    babsqrt(x,(guess + x/guess)/2.0);
+\end{lstlisting}
+\end{kdlexample}
+
+Looking back at this example there are two things to observe. The base case comes first. If the guess is within one millionth of the right value then the function returns the guess as the square root. The other observation is the recursive call brings us closer to the solution.
+
+\begin{kdlexercise}
+\label{factorial}
+$n!$ is called the factorial of $n$. It is defined recursively as $0!=1$ and $n!=n*(n-1)!$. Write this as a recursive function in SML. 
+\end{kdlexercise}
+
+\begin{kdlexercise}
+\label{fib}
+The Fibonacci sequence\index{Fibonacci sequence} is a sequence of numbers $0, 1, 1, 2, 3, 5, 8, 13, ...$. Subsequent numbers in the sequence are derived by adding the previous two numbers in the sequence together. This leads to a recursive definition of the Fibonacci sequence. What is the recursive definition of Fibonacci's sequence? HINT: The first number in the sequence can be thought of as the $0^{th}$ element, the second the $1^{st}$ element and so on. So, $fib(0) = 0$. After arriving at the definition, write a recursive SML function to find the $n^{th}$ element of the sequence. 
+\end{kdlexercise}
+
+\newpage
+\newsection{Characters, Strings, and Lists}
+
+SML has separate types for characters and strings. A character literal begins with a pound sign (i.e. {\small \verb+#+}). The character is then surrounded by double quotes. So, the first character in the alphabet is represented as {\small \verb+#"a"+} in SML. There are several functions available in the Char structure for testing and converting characters. The signature of the functions in the Char structure is given in appendix~\ref{charstruct}.
+
+Strings in SML are not simply sequences of characters as they are in some languages. A string in SML is its own primitive type. There are functions for converting between strings and characters of course. You can consult appendix~\ref{basislib}, sections~\ref{charstruct} and \ref{stringstruct} for a list of those functions. A string literal is text surrounded by double quotes. The backslash character (i.e. \verb+\+) is an escape character in strings. This means to include a double quote in a string you can write \verb+\"+ as part of the string. A \verb+\n+ is the newline character in a string and \verb+\t+ is the tab character as they are in many languages.
+
+Perhaps the most powerful data structure in SML is the list\index{ML!list}. A list is polymorphic meaning that there are many list types in SML. However, the list functions all work on any type of list. Since it is impossible to determine all the types in SML (because programmers may define their own types), a list's type is parameterized by a type variable. A list's type is written as {\small \verb+'a list+}. When the type of the list is known, the type variable {\small \verb+'a+} is replaced by the type it represents. So, a list of integers has type {\small \verb+int list+}. You may have figured this out already, but lists in SML must be homogeneous. This means all the elements of a list must have the same type. This is not like some languages, but there is a good reason for this restriction. Requiring lists to be homogeneous makes static checking of the types in SML possible and the type checker sound and complete.
+
+A list is constructed in one of several ways. First, an empty list is represented as {\small \verb+nil+} or by the empty list (i.e. {\small \verb+[]+}). A list may be represented as a literal by putting a left bracket and a right bracket around the list contents, as in {\small \verb+[1,4,9,16]+}. A list may also be constructed using the list constructor which is written {\small \verb+::+}. The list constructor takes an element on the left side of it and a list on the right side and constructs a new list of its two arguments. A list may be constructed by concatenating two lists together. List concatenation is represented with the {\small \verb+@+} symbol.
+
+\begin{kdlexample}
+The following are all valid list constructions in SML.
+\begin{itemize}
+\item[] {\small \verb+[1,4,9,16]+}
+\item[] {\small \verb+1::[4,9,16,25]+}
+\item[] {\small \verb+#"a"::#"b"::[#"c"]+} 
+\item[] {\small \verb+1::2::3::nil+}
+\item[] {\small \verb+["hello","how"]@["are","you"]+}
+\end{itemize}
+\end{kdlexample}
+
+The third example works because the {\small \verb+::+} constructor is right-associative. So the right-most constructor is applied first, then the one to its left, and so on.
+
+\begin{kdlexample}
+The signatures of the list constructor and some list functions are given here.
+\begin{lstlisting}[numbers=none]
+:: : 'a * 'a list -> 'a list
+@ : 'a list * 'a list -> 'a list
+hd : 'a list -> 'a
+tl : 'a list -> 'a list
+\end{lstlisting}
+\end{kdlexample}
+ 
+\begin{kdlexercise}
+\label{invalidlists}
+The following are NOT valid list constructions in SML. Why not? Can you fix them?
+\begin{itemize}
+\item[] {\small \verb+#"a"::["beautiful day"]+}
+\item[] {\small \verb+"hi"::"there"+}
+\item[] {\small \verb+["how","are"]::"you"+}
+\item[] {\small \verb+[1,2.0,3.5,4.2]+}
+\item[] {\small \verb+2@[3,4]+}
+\item[] {\small \verb+[]::3+}
+\end{itemize}
+\end{kdlexercise}
+
+You can select elements from a list using the \index{ML!hd}\verb+hd+ and \index{ML!tl}\verb+tl+ functions. The {\small \verb+hd+} (pronounced {\em head}) of a list is the first element of the list. The {\small \verb+tl+} is the tail or all the rest of the elements of the list. Calling the {\small \verb+hd+} or {\small \verb+tl+} functions on the empty list will result in an error. Using these two functions and recursion it is possible to access each element of a list. 
+
+\begin{kdlexample}
+Here is a function called implode that takes a list of characters as an argument and returns a string comprised of those characters. 
+\begin{lstlisting}[numbers=none]
+fun implode(lst) = 
+  if lst = [] then ""
+  else str(hd(lst))^implode(tl(lst))
+\end{lstlisting}
+So, {\small \verb+implode([#"H",#"e",#"l",#"l",#"o"])+} would yield {\small \verb+"Hello"+}.
+\end{kdlexample}
+
+When writing a recursive function the trick is to not think too hard about how it works. Think of the base case or cases and the recursive cases separately. So, in the function above the base case is when the list is empty (since a list is the parameter). When the list is empty, the string the function should return would also be empty, right?
+
+The recursive case is when when the list is not empty. In that case, there is at least one element in the list. If that is true then we can call {\small \verb+hd+} to get the first element and {\small \verb+tl+} to get the rest of the list. The head of the list is a character and must be converted to a string. The rest of the list is converted to a string by calling some function that will convert a list to a string. This function is called {\small \verb+implode+}!  We can just assume it will work. That is the nature of recursion. The trick, if there is one, is to trust that recursion will work. Later, we will explore exactly why we can trust recursion. 
+
+\begin{kdlexercise}
+\label{explode}
+Write a function called {\small \verb+explode+} that will take a string as an argument and return a list of characters in the string. So, {\small \verb+explode("hi")+} would yield {\small \verb+[#"h",#"i"]+}. HINT: How do you get the first character of a string? 
+\end{kdlexercise}
+
+\begin{kdlexample}
+Here are a couple more examples of list functions.
+\begin{lstlisting}
+fun length(x) = 
+	if null x then 0
+	else 1+length(tl(x))
+fun append(L1, L2) = 
+	if null L1 then L2 else hd(L1)::append(tl(L1),L2)
+\end{lstlisting}
+\end{kdlexample}
+
+\begin{kdlexercise}
+\label{appendreverse}
+Use the append function to write reverse. The reverse function reverses the elements of a list. Its signature is 
+\begin{lstlisting}[numbers=none]
+reverse = fn: 'a list -> 'a list
+\end{lstlisting}
+\end{kdlexercise}
+
+\newsection{Pattern Matching}
+\label{patternmatching}
+
+Frequently, recursive functions rely on several recursive and several base cases. SML includes a nice facility for handling these different cases in a recursive definition by allowing pattern matching\index{ML!pattern matching} of the arguments to a function. Pattern matching works with literal values like 0, the empty string, and the empty list. Generally, you can use pattern matching if you would normally use equality to compare values. Real numbers are not equality types. The {\em real} type only approximates real numbers. Example~\ref{babylonian} shows how to compare real numbers for equality.
+
+You can also use constructors in patterns. So the list constructor {\small \verb+::+} works in patterns as well. Functions like the append function (i.e. {\small \verb+@+}) and string concatenation (i.e. {\small \verb+^+}) don't work in patterns. These functions are not constructors of values and cannot be efficiently or deterministically matched to patterns of arguments. 
+
+\begin{kdlexample}
+Append can be written using pattern-matching as follows. The extra parens around the recursive call to append are needed because the {\small \verb+::+} constructor has higher precedence than  function application. 
+\begin{lstlisting}[numbers=none]
+fun append(nil,L2) = L2
+  | append(h::t,L2) = h::(append(t,L2))
+\end{lstlisting}
+\end{kdlexample}
+
+\begin{kdlexercise}
+\label{patternmatch}
+Rewrite reverse using pattern-matching.
+\end{kdlexercise}
+
+\newsection{Tuples}
+A tuple type is a cross product of types. A two-tuple is a cross product of two types, a three-tuple is a cross product of three types, and so on. 
+\begin{kdlexample}
+\verb+(5,6)+ is a two-tuple of {\small \verb+int * int+}.\\ The three tuple {\small \verb+(5,6,"hi")+} is of type {\small \verb+int * int * string+}. 
+\end{kdlexample}
+You might have noticed the signature of some of the functions in this chapter. For instance, consider the signature of the append function. Its signature is 
+\begin{lstlisting}[keywordstyle=,numbers=none]
+val append : 'a list * 'a list -> 'a list
+\end{lstlisting}
+This indicates it's a function that takes as its argument an {\small \verb+'a list * 'a list+} tuple. In fact, every function takes a single argument and returns a single value. The sole argument might be a tuple of one or more values, but every function takes a single argument as a parameter. The return value of a function may also be a tuple. 
+
+In many other languages we think of writing function application as the function followed by a left paren, followed by comma separated arguments, followed by a right paren. In Standard ML (and most functional languages) function application is written as a function name followed by the value to which the function is applied. This is just like function application in the lambda calculus. So, we can think of calling a function with zero or more values, but in reality we are passing one value to a every function in ML which may be a tuple.
+
+\begin{kdlexample}
+In Standard ML rather than writing
+\begin{lstlisting}[numbers=none]
+append([1,2],[3])
+\end{lstlisting}
+it is more appropriate to write
+\begin{lstlisting}[numbers=none]
+append ([1,2],[3])
+\end{lstlisting}
+because function application is a function name followed by the value it will be applied to. In this case append is applied to a tuple of {\small \verb+'a list * 'a list+}.
+\end{kdlexample}
+
+\newsection{Let Expressions and Scope}
+Let expressions\index{ML!let expression} are simply syntax for binding a value to an identifier to later be used in an expression. They are useful when you want to document your code by assigning a meaningful name to a value. They can also be useful when you need the same value more than once in a function definition. Rather than calling a function twice to get the same value, you can call it once and bind the value to an identifier. Then the identifier can be used as many times as the value is needed. This is more efficient than calling a function multiple times with the same arguments.
+
+\begin{kdlexample}
+Consider a function that computes the sum of the first {\small \verb+n+} integers. 
+\begin{lstlisting}
+fun sumupto(0) = 0
+  | sumupto(n) = 
+    let val sum = sumupto(n-1)
+    in
+      n + sum
+    end
+\end{lstlisting}
+\end{kdlexample}
+
+Let expressions let us define identifiers that are local to functions. The identifier called {\small \verb+sum+} in the example above is not visible outside the {\small \verb+sumupto+} function definition. We say the scope of {\small \verb+sum+} is the body of the let expression (i.e. the expression given between the {\small \verb+in+} and {\small \verb+end+} keywords). Let expressions allow us to declare identifiers with limited scope\index{scope}. 
+
+Limiting scope is an important aspect of any language. Function definitions also limit scope in SML and most languages. The formal parameters of a function definition are not visible beyond the body of the function. 
+
+Binding values to identifiers should not be confused with variable assignment. A binding of a value to an identifier is a one time operation. The identifier's value cannot be updated like a variable. A \practice will help to illustrate this.
+
+\begin{kdlexercise}
+\label{lettest}
+What is the value of {\small \verb+x+} at the various numbered points within the following expression? Be careful, it's not what you think it might be if you are relying on your imperative understanding of code.
+
+\begin{lstlisting}
+let val x = 10 
+in
+   (* 1. Value of x here? *) 
+   let val x = x+1
+   in
+     (* 2. Value of x here? *)
+     x
+   end;  
+   (* 3. Value of x here? *)
+   x  
+end
+\end{lstlisting}
+\end{kdlexercise}
+
+Bindings are not the same as variables. Bindings are made once and only once and cannot be updated. Variables are meant to be updated as code progresses. Bindings are an association between a value and an identifier that is not updated.
+
+SML and many modern languages use static or lexical scope\index{scope!static} rules. This means you can determine the scope of a variable by looking at the structure of the program without considering its execution. The word lexical refers to the written word and lexical or static scope refers to determining scope by looking at how the code is written and not the execution of the code. Originally, LISP used dynamic scope rules\index{scope!dynamic}. To determine dynamic scope you must look at the bindings that were active when the code being executed was called. The difference between dynamic and static scope can be seen when functions may be nested in a language and may also be passed as parameters or returned as function results. 
+
+\begin{kdlexample}
+\label{dynamicscope}
+The difference between dynamic and static scope can be observed in the following program. 
+
+\begin{lstlisting}
+let fun a() = 
+        let val x = 1
+            fun b() = x
+        in 
+          b
+        end
+    val x = 2
+    val c = a()
+in 
+  c()
+end
+\end{lstlisting}
+
+In this program the function {\em a}, when called, declares a local binding of {\em x} to 1 and returns the function {\em b}. When {\em c}, the result of calling {\em a}, is called it returns a 1, the value of {\em x} in the environment where {\em b} was defined, not a 2. This result is what most people expect to happen. It is static or lexical scope. The correct value of {\em x} does not depend on the value of {\em x} when it was called, but the value where the function {\em b} was written.
+\end{kdlexample}
+
+While static scope is used by many programming languages including Standard ML, Python, Lisp, and Scheme, it is not used by all languages. The Emacs version of Lisp uses dynamic scope and if the equivalent Lisp program is evaluated in Emacs Lisp it will return a value of 2 from the code in example~\ref{dynamicscope}. 
+
+It is actually harder to implement static scope than dynamic scope. In dynamically scoped languages when a function is returned as a value the return value can include a pointer to the code of the function. When the function {\em b} from example~\ref{dynamicscope} is executed in a dynamically scoped language, it simply looks in the current environment for the value of {\em x}.  To implement static scope, more than a pointer to the code is needed. A pointer to the current environment is needed which contains the binding of {\em x} to the value at the time the function was defined. This is needed so when the function {\em b} is evaluated, the right {\em x} binding can be found. The combination of a pointer to a function's code and its environment is called a {\em closure}. Closures are used to represent function values in statically scoped languages where functions may be returned as results and nested functions may be defined. 
+
+\newsection{Datatypes}
+\label{datatypes}
+
+The word datatype\index{ML!datatype} is often loosely used in computer science. In ML, a datatype is a special kind of type. A datatype is a tagged structure that can be recursively defined. This type is powerful in that you can define enumerated types with it and you can define recursive data structures like lists and trees.
+
+Datatypes are user-defined types and are generally recursively defined so there are infinitely many datatypes in Standard ML. This would be something like creating a class in C++ except that classes define both data and methods. In a functional language a set of functions is defined to work with a type of data through pattern-matching as described in section~\ref{patternmatching}.
+
+\begin{kdlexample}
+In C/C++ we can create an enumerated type by writing
+
+\begin{lstlisting}
+enum TokenType {
+   identifier,keyword,number,add,sub,times,divide,lparen,
+   rparen,eof,unrecognized
+};
+\end{lstlisting} 
+	
+This defines a type called TokenType of eleven values: identifier==0, keyword==1, number==2, etc.
+You can declare a variable of this type as follows:
+
+\begin{lstlisting}[numbers=none]
+  TokenType t = keyword;
+\end{lstlisting} 
+	
+However, there is nothing preventing you from executing the statement 
+
+\begin{lstlisting}[numbers=none]
+  t = 1; //this is the keyword value.
+\end{lstlisting}
+
+In this example, even though {\small \verb+t+} is of type {\small \verb+TokenType+}, it can be assigned an integer. This is because the TokenType type is just another name for the integer type in C++. Assigning {\small \verb+t+} to 1 doesn't bother C++ in the least. In fact, assigning {\small \verb+t+} to 99 wouldn't bother C++ either. In ML, we can't use integers and datatypes interchangeably. 
+
+\begin{lstlisting}[numbers=none]
+- datatype TokenType = Identifier | Keyword | Number | 
+    Add | Sub | Times | Divide | LParen | RParen | EOF | 
+    Unrecognized;	
+datatype TokenType = Identifier | Keyword | Number | ...
+- val x = Keyword;
+x = Keyword : TokenType
+\end{lstlisting} 
+\end{kdlexample}
+
+Datatypes allow programmers to define their own types. Normally, a datatype includes other information. They are used to represent structured data of some sort. By adding the keyword {\small \verb+of+}, a datatype value can include a tuple of other types as part of its definition. A datatype can represent any kind of recursive data structure. That includes lists, trees, and other structures that are related to lists and trees. In the example below a tree definition with a mix of unary and binary nodes is defined. 
+
+Datatypes allow a programmer to write a recursive function that can traverse the data given to it. Functions can use pattern matching to handle each case in a datatype with a pattern match in the function. 
+
+\begin{kdlexample}
+\label{abstreedef}
+In this datatype the {\small \verb+add'+} value can be thought of as a node in an {\small \verb+AST+} that has two children, each of which are {\small \verb+AST+}s. The datatype is recursive because it is defined in terms of itself. 
+\begin{lstlisting}
+datatype
+  AST = add' of AST * AST
+      | sub' of AST * AST
+      | prod' of AST * AST
+      | div' of AST * AST
+      | negate' of AST
+      | integer' of int
+      | store' of AST
+      | recall';
+\end{lstlisting} 
+\end{kdlexample}
+
+Example~\ref{abstreedef} is the entire definition of abstract syntax trees for expressions in the calculator language. In addition to the nodes you've seen before, the negate' node represents unary negation of the value we get when evaluating its child. So now {\small \verb+-6+} is a valid expression. 
+
+\begin{kdlexample}
+The abstract syntax tree for -6S+R would be as shown below.
+
+\begin{center}
+\includegraphics[width=4cm]{abstree3.pdf}
+\end{center}
+
+{\small\verb+add'(store'(negate'(integer'(6))), recall')+} is the value of the tree given above as an SML datatype. A function can be written to evaluate an abstract synatx tree based on the patterns in a value like this. 
+
+\end{kdlexample}
+
+You can use pattern matching on datatypes. For instance, to evaluate an expression tree you can write a recursive function using pattern-matching. Each pattern that is matched in such a function corresponds to processing one node in the tree. Each subtree can be processed by a recursive call to the same function. 
+In the function below, the parameter {\small \verb+min+} is the value of the memory before evaluating the given node in the abstract syntax tree. The value {\small \verb+mout+} is the value of memory after evaluating the node in the abstract syntax tree. 
+
+\begin{kdlexample}
+This example illustrates how to use pattern-matching with datatypes and patterns in a {\small \verb+let+} construct. 
+\label{evaluatefun}
+\begin{lstlisting}
+    fun evaluate(add'(e1,e2),min) =
+        let val (r1,mout1)= evaluate(e1,min)
+            val (r2,mout) = evaluate(e2,mout1)
+        in
+          (r1+r2,mout)
+        end
+
+      | evaluate(sub'(e1,e2),min) =
+        let val (r1,mout1)= evaluate(e1,min)
+            val (r2,mout) = evaluate(e2,mout1)
+        in
+          (r1-r2,mout)
+        end   
+\end{lstlisting} 
+\verb+mout1+ is the value of memory after evaluating {\small \verb+e1+}. This is passed to evaluating {\small \verb+e2+} as the value of the memory before evaluating {\small \verb+e2+}. The value of memory after evaluating {\small \verb+e2+} is the value of memory after evaluating the sum/difference of the two expressions. This pattern of passing the memory through the evaluation of the tree is called {\em single-threading} the memory in the computation.
+\end{kdlexample}
+
+\begin{kdlexercise}
+\label{intlist}
+Define a datatype for integer lists. A list is constructed of a head and a tail. Sometimes this constructor is called {\small \verb+cons+}. The empty list is also a list and is usually called {\small \verb+nil+}. However, in this \practice, to distinguish from the built-in {\small \verb+nil+} you could call it {\small \verb+nil'+}.
+\end{kdlexercise}
+
+\begin{kdlexercise}
+\label{maxIntList}
+Write a function called {\small \verb+maxIntList+} that returns the maximum integer found in one of the lists you just defined in \practice~\ref{intlist}. You can consult appendix~\ref{basislib} for help with finding the max of two integers.
+\end{kdlexercise}
+
+\newpage
+\newsection{Parameter Passing in Standard ML}
+
+The types of data in Standard ML include integers, reals, characters, strings, tuples, lists, and the user-defined datatypes presented in section~\ref{datatypes}. If you look at these types in this chapter and in appendix~\ref{basislib} you may notice that there are no functions that modify the existing data. The substring  function defined on strings returns a new string as do all functions on the types of data available in Standard ML. All data in Standard ML is immutable. That's quite a statement. It's true of some functional languages, but not all. Every type of data in Standard ML is immutable. 
+
+Well, almost. There is one type of data that is mutable in ML. A reference is a reference to a value of a determined type. References may be mutated to enable the programmer to program using the imperative style of programming. References are discussed in more detail in section~\ref{sideeffects}.
+
+The absence of mutable data, except for references, has some impact on the implementation of the language. Values are passed by reference\index{pass by!reference} in Standard ML. However, the only time that matters is when a reference is passed as a parameter. Otherwise, the immutability of all data means that how data is passed to a function is irrelevant. This is nice for programmers as they don't have to be concerned about which functions mutate data and which construct new data values. There is only one operation that mutates data, the assignment operator (i.e. {\small \verb+:=+}) as described in section~\ref{sideeffects} and the only data it can mutate is a reference. In addition, because all data is immutable and passed by reference, parameters are passed efficiently in ML like constant references of C++.
+
+\newsection{Efficiency of Recursion}
+
+Once you get used to it, writing recursive functions\index{recursion!efficiency} isn't too hard. In fact, it can be easier than writing iterative solutions. But, just because you find a recursive solution to a problem, doesn't mean it's an effficient solution to a problem. Consider the Fibonacci numbers. The recursive definition leads to a very straightforward recursive solution. However, as it turns out, the simple recursive solution is anything but efficient. In fact, given the definition in example~\ref{badfib}, fib(43) took twenty-four seconds to compute on a 1.5 GHz G4 PowerBook with 1GB of RAM.
+
+\begin{kdlexample}
+\label{badfib}
+The Fibonacci numbers can be computed with the function definition given below.
+\begin{lstlisting}[numbers=none]
+fun fib(0) = 0
+  | fib(1) = 1
+  | fib(n) = fib(n-1) + fib(n-2)
+\end{lstlisting}
+\end{kdlexample}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=9cm]{fibtree}
+\caption{Calls to calculate fib(5)}
+\label{fibtree}
+\end{figure}
+
+This is a very inefficient way of calculating the Fibonacci numbers. The number of calls to fib increases exponentially with the size of {\small \verb+n+}. This can be seen by looking at a tree of the calls to fib as in figure~\ref{fibtree}. The number of calls required to calculate {\small \verb+fib(5)+} is 15. If we were to enumerate the calls required to calculate {\small \verb+fib(6)+} it would be everything in the {\small \verb+fib(5)+} call tree plus the number of nodes in the {\small \verb+fib(4)+} call tree, $15+9=25$. The number of calls grows exponentially.
+
+\begin{kdlexercise}
+\label{expcalls}
+One way of proving that the {\small \verb+fib+} function given above is exponential is to show that the number of calls for {\small \verb+fib(n)+} is bounded by two exponential functions. In other words, there is an exponential function of {\small \verb+n+} that will always return less than the number of calls required to compute {\small \verb+fib(n)+} and there is another exponential function that always returns greater than the number of required calls to compute {\small \verb+fib(n)+} for some choice of starting {\small \verb+n+} and all values greater than it. If the number of calls to compute {\small \verb+fib(n)+} lies in between then the {\small \verb+fib+} function must have exponential complexity. Find two exponential functions of the form $c^m$ that bound the number of calls required to compute {\small \verb+fib(n)+}.
+\end{kdlexercise}
+
+From this analysis you have probably noticed that there is a lot of the same work being done over and over again. It may be possible to eliminate a lot of this work if we are smarter about the way we write the Fibonacci function. In fact it is. The key to this efficient version of {\small \verb+fib+} is to recognize that we can get the next value in the sequence by adding together the previous two values. If we just carry along two values, the current and the next value in the sequence, we can compute each Fibonacci number with just one call. Example~\ref{fibhelper} shows you how to do this. With the new function, computation of fib(43) is instantaneous. 
+
+\newpage
+\begin{kdlexample}
+\label{fibhelper}
+Using a helper function may lead to a better implementation in some situations. In the case of the {\small \verb+fib+} function, the {\small \verb+fibhelper+} function turns an exponentially complex function into a linear time function. 
+\begin{lstlisting}
+fun fib(n) = 
+  let fun fibhelper(count,current,previous) = 
+		if count = n then previous
+		else fibhelper(count+1,previous+current,current)		
+  in
+ 		fibhelper(0,1,0)
+  end
+\end{lstlisting}
+\end{kdlexample}
+
+In example~\ref{fibhelper} we used a helper function that was private to the {\small \verb+fib+} function because we don't want other programmers to call the {\small \verb+fibhelper+} function directly. It is meant to be used by the {\small \verb+fib+} function. We also wouldn't want to have to remember how to call the {\small \verb+fibhelper+} function each time we called it. By hiding it in the {\small \verb+fib+} function we can expose the same interface we had with the original implementation, but implement a much more efficient function.
+
+The helper function uses a pattern called an accumulator pattern\index{accumulator pattern}. The helper function makes use of an accumulator to reduce the amount of work that is done. The work is reduced because the function keeps track of the last two values computed by the helper function to aide in computing the next number. 
+
+\begin{kdlexercise}
+\label{reversecomplexity}
+Consider the reverse function you wrote in \practice~\ref{appendreverse}. The {\small \verb+append+} function is called {\small \verb+n+} times, where {\small \verb+n+} is the length of the list. How many cons operations happen each time append is called? What is the overall complexity of the reverse function?
+\end{kdlexercise}
+
+\newsection{Tail Recursion}
+One criticism of functional programming centers on the heavy use of recursion that is seen by some critics as overly inefficient. The problem is related to the use of caches in modern processors. Depending on the block size of an instruction cache, the code surrounding the currently executing code may be readily available in the cache. However, when the instruction stream is interrupted by a call to a function, even the same function, the cache may not contain the correct instructions. Retrieving instructions from memory is much slower than finding them in the cache. However, cache sizes continue to increase and even imperative languages like C++ and Java encourage many calls to small functions or methods given their object-oriented nature. So, the argument in favor of fewer function calls has certainly diminished in recent years.
+
+It is still the case that a function call takes longer than executing a simple loop. When a function call is made, extra instructions are executed to create a new activation record. In addition, in pipelined processors the pipeline is disrupted by function calls. Standard ML of New Jersey, Scheme, and some other functional languages have a mechanism where they optimize certain recursive functions by reducing the storage on the run-time stack and eliminating calls. In certain cases, recursive calls can be automatically transformed to code that can be executed using jump or branch instructions. For this optimization to be possible, the recursive function must be tail recursive. A tail recursive\index{tail recursion} function is a function where the very last operation of the function is the recursive call to itself.
+
+\begin{kdlexample}
+This is the {\small \verb+factorial+} function. 
+\begin{lstlisting}[numbers=none]
+fun factorial 0 = 1
+  | factorial n = n * factorial (n-1);
+\end{lstlisting} 
+Is factorial tail recursive? The answer is no. Tail recursion happens when the very last thing done in a recursive function is a call to itself. The last thing done above is the multiplication. 
+\end{kdlexample}
+
+When factorial 6 is invoked, activation records are needed for seven invocations of the function, namely factorial 6 through factorial 0. Without each of these stack frames, the local values of n, n=6 through n=0, will be lost so that the multiplication at the end can not be carried out correctly.
+
+At its deepest level of recursion all the information in the expression,
+	
+%\begin{lstlisting}
+\[(6 * (5 * (4 * (3 * (2 * (1 * (factorial~0)))))))\]
+%\end{lstlisting} 
+
+is stored in the run-time execution stack. 
+
+\begin{kdlexercise}
+\label{runtimestack}
+Show the run-time execution stack at the point that factorial 0 is executing when the original call was factorial 6. 
+\end{kdlexercise}
+
+The {\small \verb+factorial+} function can be written to be tail recursive. The solution is to use a technique similar to the {\small \verb+fib+} function improvement made in example~\ref{fibhelper}. An accumulator is added to the function definition. An accumulator is an extra parameter that can be used to accumulate a value, much the way you would accumulate a value in a loop. The accumulator value is initially given the identity of the operation used to accumulate the value. In example~\ref{tailfac} the operation is multiplication. The identity provided as the initial value is 1. 
+
+\newpage
+\begin{kdlexample}
+\label{tailfac}
+This is the tail recursive version of the {\small \verb+factorial+} function. The tail recursive function is the {\small \verb+tailfac+} helper function. 
+\begin{lstlisting}
+fun factorial n = 
+    let fun tailfac(0,prod) = prod
+          | tailfac(n,prod) = tailfac(n-1,prod*n)
+    in
+      tailfac(n,1)
+    end
+\end{lstlisting} 
+\end{kdlexample}
+
+Note that although {\small \verb+tailfac+} is recursive, there is no need to save it's local environment when it calls itself since no computation remains after the call. The result of the recursive call is simply passed on as the result of the current function call. A function is tail recursive if its recursive call is the last action that occurs during any particular invocation of the function. 
+
+\begin{kdlexercise}
+\label{fastreverse}
+Use the accumulator pattern to devise a more efficient reverse function. The append function is not used in the efficient reverse function. HINT: What are we trying to accumulate? What is the identity of that operation?
+\end{kdlexercise}
+
+\newsection{Currying}
+
+A binary function, for example, {\small \verb~+~} or {\small \verb+@+}, takes both of its arguments at the same time. {\small \verb~a+b~} will evaluate both {\small \verb+a+} and {\small \verb+b+} so that values can be passed to the addition operation. There can be an advantage in having a binary function take its arguments one at a time. Such a function is called {\em curried}\index{function!curried} after Haskell Curry\index{Curry!Haskell}. In fact, ML functions can take their parameters one at a time.
+
+The preceding paragraph may be a bit misleading. Every ML function takes one and only one parameter. So a curried function takes one argument as well. However, that function of one parameter may in turn return a function that takes a single argument. This is probably best illustrated with an example.
+
+\begin{kdlexample}
+\label{curried}
+Here is a function that takes a pair of arguments as its input.
+\begin{lstlisting}[numbers=none]
+- fun plus(a:int,b) = a+b;
+val plus = fn : int * int -> int
+\end{lstlisting}
+The function {\small \verb+plus+} takes one argument that just happens to be a tuple. It is applied to a single tuple.
+\begin{lstlisting}[numbers=none]
+- plus (5,8);
+val it = 13 : int
+\end{lstlisting} 
+ML functions can be defined with what looks like more than one parameter:
+\begin{lstlisting}[numbers=none]
+fun cplus(a:int) b = a+b;
+val cplus = fn : int -> (int -> int )
+\end{lstlisting} 
+Observe the signature of the function {\small \verb+cplus+}. It takes two arguments, but takes them one at a time. Actually, cplus takes only one argument. The {\small \verb+cplus+} function returns a function that takes the second argument. The second function has no name.
+\begin{lstlisting}[numbers=none]
+cplus 5 8;
+val it = 13 : int
+\end{lstlisting} 
+
+Function application is left associative. The parens below show the order of operations.
+\begin{lstlisting}[numbers=none]
+(cplus 5) 8;
+val it = 13 : int
+\end{lstlisting}
+
+The result of {\small \verb+(cplus 5)+} is a function that adds {\small \verb+5+} to its argument.
+\begin{lstlisting}[numbers=none]
+- cplus 5;
+val it = fn : int -> int
+\end{lstlisting} 
+
+We can give this function a name.
+\begin{lstlisting}[numbers=none]
+- val add5 = cplus 5;
+val add5 = fn : int -> int	
+- add5 8;
+val it = 13 : int
+\end{lstlisting} 
+\end{kdlexample}
+
+\begin{kdlexercise}
+\label{curry}
+Write a function that given an uncurried function of two arguments will return a curried form of the function so that it takes its arguments one at a time.
+
+Write a function that given a curried function that takes two arguments one at a time will return an uncurried version of the given function.
+\end{kdlexercise}
+
+Curried functions allow partial evaluation, a very interesting topic in functional languages, but beyond the scope of this text. It should be noted that Standard ML of New Jersey uses curried functions extensively in its implementation. 
+
+\newsection{Anonymous Functions}
+Section~\ref{lambdacalculus} describes the lambda calculus. In that section we learned that functions can be characterized as first class objects. Functions can be represented by a lambda abstraction and don't have to be assigned a name. This is also true in SML. Functions in SML don't need names. 
+
+\begin{kdlexample}
+The anonymous function\index{function!anonymous} $\lambda x,y.y^2+x$ can be represented in ML as 
+\begin{lstlisting}[keywordstyle=,numbers=none]
+- fn x => fn y => y*y + x;
+\end{lstlisting} 
+The anonymous function can be applied to a value in the same way a named function is applied to a value. Function application is always the function first, followed by the value. 
+\begin{lstlisting}[keywordstyle=,numbers=none]
+- (fn x => fn y => y*y + x) 3 4;
+val it = 19 : int
+\end{lstlisting} 
+
+We can define a function by binding a lambda abstraction to an identifier:
+\begin{lstlisting}[numbers=none]
+- val f = fn x => fn y => y*y + x;
+val f = fn: int -> int -> int
+- f 3 4;
+val it = 19 : int
+\end{lstlisting} 
+\end{kdlexample}
+
+This mechanism provides an alternative form for defining functions as long as they are not recursive; in a {\small \verb+val+} declaration, the identifier being defined is not visible in the expression on the right side of the arrow.
+For recursive definitions, use {\small \verb+val rec+}.
+
+\begin{kdlexample}
+\label{fundef}
+To define a recursive function using the anonymous function form you must use {\small \verb+val rec+} to declare it. 
+\begin{lstlisting}[numbers=none]
+- val rec fac = fn n => if n=0 then 1 else n*fac(n-1);
+val fac = fn: int -> int
+- fac 7;
+val it = 5040:int
+\end{lstlisting} 
+\end{kdlexample}
+
+The form of function definition presented in example~\ref{fundef} is the way all functions are defined in SML. The functional form used when the keyword {\small \verb+fun+} is used to define a function is translated into the form show in example~\ref{fundef}. The {\small \verb+fun+} form of function definition is {\em syntactic sugar}. Syntactic sugar refers to another way of writing something that gets treated the same way in either case.
+
+\newsection{Higher-Order Functions}
+
+The unique feature of functional languages is that functions are treated as first-class objects with the same rights as other objects, namely to be stored in data structures, to be passed as a parameter, and to be returned as function results. Functions can be bound to identifiers using the keywords 
+\verb+fun+, {\small \verb+val+}, and {\small \verb+val rec+} and may also be stored in structures:
+
+\begin{kdlexample}
+These are examples of functions being treated as values.
+\begin{lstlisting}[numbers=none]
+- val fnlist = [fn (n) => 2*n, abs, ~, fn (n) => n*n];
+val fnlist = [fn,fn,fn,fn] : (int -> int) list
+\end{lstlisting} 
+\end{kdlexample}
+
+Notice each of these functions takes an int and returns an int. An ML function can be defined to apply each of these functions to a number.
+
+\begin{kdlexample}
+The {\small \verb+construction+} function applies a list of functions to a value. 
+\begin{lstlisting}[numbers=none]
+fun construction  nil n = nil
+    | construction (h::t) n = (h n)::(construction t n);
+val construction = fn : ('a -> 'b) list -> 'a -> 'b list
+
+construction [op +, op *, fn (x,y) => x - y] (4,5);
+val it = [9,20,~1] : int list
+\end{lstlisting} 
+\end{kdlexample}
+
+Construction is based on a functional form found in FP, a functional language 
+developed by John Backus. It illustrates the possibility of passing functions as arguments. Since functions are first-class objects in ML, they may be stored in any sort of structure. It is possible to imagine an application for a stack of functions or even a tree of functions. 
+
+A function is called higher-order if it takes a function as a parameter or returns a function as its result.
+Higher-order functions\index{function!higher-order} are sometimes called functional forms since they allow the construction of new functions from already defined functions.
+
+The usefulness  of functional programming comes from the use of functional forms that allow the development of complex functions from simple functions using abstract patterns. The {\small \verb+construction+} function is one of these abstract patterns of computation. These functional forms, or patterns of computation, appear over and over again in programs. Programmers have recognized these patterns and have abstracted out the details to arrive at several commonly used higher-order functions. The next sections introduce you to several of these higher-order functions. 
+
+\subsection{Composition}
+
+Composing two functions is a naturally higher-order operation that you have probably used in algrebra. Have you ever written something like f(g(x))? This operation can be expressed in ML. In fact, ML has a built-in operator called {\small \verb+o+} which represents composition. Example~\ref{composition} shows you how composition can be written and used. 
+
+\begin{kdlexample}
+\label{composition}
+\begin{lstlisting}[numbers=none]
+- fun compose f g x = f (g x);
+val compose = fn : ('a -> 'b) -> ('c -> 'a) -> 'c -> 'b
+- fun add1 n = n+1;
+- fun sqr n:int = n*n;
+- val incsqr = compose add1 sqr;
+val incsqr = fn : int -> int
+- val sqrinc = compose sqr add1;
+val sqrinc = fn : int -> int
+\end{lstlisting} 
+
+Observe that these two functions, {\small \verb+incsqr+} and {\small \verb+sqrinc+}, are defined without the use of parameters.
+
+\begin{lstlisting}[numbers=none]
+- incsqr 5;
+val it = 26 : int
+- sqrinc 5;
+val it = 36 : int
+\end{lstlisting} 
+ML has a predefined infix function {\small \verb+o+} that composes functions. Note that {\small \verb+o+} is uncurried.
+\begin{lstlisting}[numbers=none]
+- op o;
+val it = fn : ('a -> 'b) * ('c -> 'a) -> 'c -> 'b
+- val incsqr = add1 o sqr;
+val incsqr = fn : int -> int
+- incsqr 5;
+val it = 26 : int
+- val sqrinc = op o(sqr,add1);
+val sqrinc = fn : int -> int
+- sqrinc 5;
+val it = 36 : int
+\end{lstlisting} 
+\end{kdlexample}
+
+\subsection{Map}
+
+In SML, applying a function to every element in a list is called {\small \verb+map+} and is predefined. It takes a unary function and a list as arguments and applies the function to each element of the list returning the list of results.
+
+\begin{kdlexample}
+\begin{lstlisting}[numbers=none]
+- map;
+val it = fn : ('a -> 'b) -> 'a list -> 'b list
+- map add1 [1,2,3];
+val it = [2,3,4] : int list
+- map (fn n => n*n - 1) [1,2,3,4,5];
+val it = [0,3,8,15,24] : int list
+- map (fn ls => "a"::ls) [["a","b"],["c"],["d","e","f"]];
+val it = [["a","a","b"],["a","c"],["a","d","e","f"]] : 
+           string list list
+- map real [1,2,3,4,5];
+val it = [1.0,2.0,3.0,4.0,5.0] : real list
+\end{lstlisting} 
+
+\verb+map+ can be defined as follows:
+
+\begin{lstlisting}[numbers=none]
+fun map f nil = nil
+  | map f (h::t) = (f h)::(map f t);
+\end{lstlisting}
+\end{kdlexample}
+
+\begin{kdlexercise}
+\label{map}
+Describe the behavior (signatures and output) of these functions:
+\begin{itemize}
+\item[] {\small \verb+map (map add1)+}
+\item[] {\small \verb+(map map)+}
+\end{itemize}
+Invoking {\small \verb+(map map)+} causes the type inference system of SML to report 
+
+\begin{lstlisting}[numbers=none]
+stdIn:12.27-13.7 Warning: type vars not generalized 
+   because of value restriction are instantiated to 
+   dummy types (X1,X2,...)
+\end{lstlisting}
+This warning message is OK. It is telling you that to complete the type inference for this expression, SML had to instantiate a type variable to a dummy variable. When more type information is available, SML would not need to do this. The warning message only applies to the specific case where you created a function by invoking {\small \verb+(map map)+}. In the presence of more information the type inference system will interpret the type correctly without any dummy variables.
+\end{kdlexercise}
+
+\subsection{Reduce or Foldright}
+Higher-order functions are developed by abstracting common patterns from programs. For example, consider the functions that find the sum or the product of a list of integers. In this pattern the results of the previous invocation of the function are used in a binary operation with the next value to be used in the computation. 
+
+In other words, to add up a list of values you start with either the first or last element of the list and then add it together with the value next to it. Then you add the result of that computation to the next value in the list and so on. When we start with the end of the list and work our way backwards through the list the operation is sometimes called foldr (i.e. foldright) or reduce.
+
+\newpage
+\begin{kdlexample}
+\begin{lstlisting}[numbers=none]
+fun sum nil = 0
+  | sum ((h:int)::t) = h + sum t;
+
+val sum = fn : int list -> int
+sum [1,2,3,4,5];
+val it = 15 : int
+
+fun product nil = 1
+  | product ((h:int)::t) = h * product t;
+
+val product = fn : int list -> int
+product [1,2,3,4,5];
+val it = 120 : int
+\end{lstlisting} 
+\end{kdlexample}
+
+Each of these functions has the same pattern. If we abstract the common pattern as a higher-order function we arrive at a common higher-order function called {\small \verb+foldr+} or {\small \verb+reduce+}. {\small \verb+foldr+} is an abbreviation for foldright. 
+
+\begin{kdlexample}
+This function is sometimes called {\small \verb+foldr+}. In this example it is called {\small \verb+reduce+}.
+\begin{lstlisting}[numbers=none]
+fun reduce f init nil = init
+  | reduce f init (h::t) = f(h, reduce f init t);
+
+val reduce = fn : ('a * 'b -> 'b) -> 'b -> 'a list -> 'b
+reduce op + 0 [1,2,3,4,5];
+val it = 15 : int
+reduce op * 1 [1,2,3,4,5];
+val it = 120 : int
+\end{lstlisting} 
+
+Now {\small \verb+sum+} and {\small \verb+product+} can be defined in terms of {\small \verb+reduce+}.
+
+\begin{lstlisting}[numbers=none]
+val sumlist = reduce (op +) 0;
+val sumlist = fn : int list -> int
+val mullist = reduce op * 1;
+val mullist = fn : int list -> int
+sumlist [1,2,3,4,5];
+val it = 15 : int
+mullist [1,2,3,4,5];
+val it = 120 : int
+\end{lstlisting} 
+\end{kdlexample}
+
+SML includes two predefined functions that reduce a list, {\small \verb+foldr+} and {\small \verb+foldl+} which stands for foldleft. They behave slightly differently. 
+
+\newpage
+\begin{kdlexample}
+\begin{lstlisting}[numbers=none]
+foldr;
+val it = fn : ('a * 'b -> 'b) -> 'b -> 'a list -> 'b
+foldl;
+val it = fn : ('a * 'b -> 'b) -> 'b -> 'a list -> 'b
+- fun abdiff (m,n:int) = abs(m-n);
+val abdiff = fn : int * int -> int
+- foldr abdiff 0 [1,2,3,4,5];
+val it = 1 : int
+- foldl abdiff 0 [1,2,3,4,5];
+val it = 3 : int
+\end{lstlisting} 
+\end{kdlexample}
+
+\begin{kdlexercise}
+\label{foldlvsfoldr}
+How does {\small \verb+foldl+} differ from {\small \verb+foldr+}? Determine the difference by looking at the example above. 
+Then, describe the result of these functions invocations.
+\begin{enumerate}
+\item[] {\small \verb+foldr op :: nil ls+}
+\item[] {\small \verb+foldr op @ nil ls+}
+\end{enumerate}
+\end{kdlexercise}
+
+\subsection{Filter}
+A predicate function\index{function!predicate} is a function that takes a value and returns true or false depending on the value. 
+By passing a predicate function, it is possible to filter in only those elements from a list that satisfy the predicate. This is a commonly used higher-order function called {\small \verb+filter+}. 
+
+\begin{kdlexample}
+If we had to write filter ourselves, this is how it would be written. This example also shows how it might be used. 
+\begin{lstlisting}[numbers=none]
+fun filter bfun nil = nil
+  | filter bfun (h::t) = if bfun h then h::filter bfun t 
+                         else filter bfun t;
+
+val it = fn : ('a -> bool) -> 'a list -> 'a list
+even;
+val it = fn : int -> bool
+filter even [1,2,3,4,5,6];
+val it = [2,4,6] : int list
+filter (fn n => n > 3) [1,2,3,4,5,6];
+val it = [4,5,6] : int list
+\end{lstlisting} 
+\end{kdlexample}
+
+\begin{kdlexercise}
+\label{filterfun}
+Use filter to select numbers from a list that are
+\begin{enumerate}
+\item divisible by 7
+\item greater than 10 or equal to zero
+\end{enumerate}
+\end{kdlexercise}
+
+%\begin{kdlexample}
+%Do the following exercises from Ullman's book. 
+%\begin{itemize}
+%\item page 156:	5.3.7 c,f
+%\item page 167:	
+%\begin{itemize}
+%\item 5.4.5	b,d
+%\item 5.4.6	b,d
+%\item 5.4.7	b,d
+%\item 5.4.9
+%\item 5.4.10
+%\end{itemize}
+%\item page 181:	
+%\begin{itemize}
+%\item 5.6.1b,d,f
+%\item 5.6.6
+%\item 5.6.8
+%\end{itemize}
+%\end{itemize}
+%\end{kdlexample}
+
+\newsection{Continuation Passing Style}
+
+Continuation Passing Style (or CPS\index{CPS}) is a way of writing functional programs where control is made explicit. In other words, the continuation represents the remaining work to be done. This style of writing code is interesting because the style is used in the SML compiler.
+ 
+\begin{kdlexample}
+To understand cps it's best to look at an example. Let's consider the len function for computing the length of a list.
+\begin{lstlisting}[numbers=none]
+fun len nil = 0
+  | len (h::t) = 1+(len t);
+\end{lstlisting} 
+
+To transform this to cps form we represent the rest of the computation explicitly as a parameter called k. In this way, whenever we need the continuation of the calculation, we can just write the identifier k.
+Here's the cps form of len.
+\begin{lstlisting}[numbers=none]
+fun cpslen nil k = k 0
+  | cpslen (h::t) k = cpslen t (fn v => (k (1 + v)));
+\end{lstlisting} 
+And here's how cpslen would be called. 
+\begin{lstlisting}[numbers=none]
+cpslen [1,2,3] (fn v => v);
+\end{lstlisting} 
+\end{kdlexample}
+
+\begin{kdlexercise}
+\label{cpslenrun}
+Trace the execution of cpslen to see how it works and how the continuation is used. 
+\end{kdlexercise}
+
+Notice that the recursive call to cpslen is the last thing that is done. This function is tail recursive. However, tail recursion elimination cannot be applied because the function returns a function and recursively calls itself with a function as a parameter. CPS is still important because it can be optimized by a compiler. In addition, since control flow is explicit (passed around as k), function calls can be implemented with jumps and many of the jumps can be eliminated if the code is organized in the right way. 
+
+Eliminating calls and jumps is important since calls have the effect of interrupting pipelines in RISC processors. Since functional languages make lots of calls, one of the criticisms of functional languages is that they were inefficient. With the optimization of CPS functions, functional languages get closer to being as efficient as imperative languages. In addition, as cache sizes and processor speeds increase the performance difference becomes less and less of an issue.
+
+\begin{kdlexercise}
+\label{pathfun}
+Write a function called {\small \verb+depth+} that prints the longest path in a binary tree. First create the datatype for a binary tree. You can use the {\small \verb+Int.max+} function in your solution, which returns the maximum of two integers. 
+
+First write a non-cps {\small \verb+depth+} function, then write a cps {\small \verb+cpsdepth+} function. 
+\end{kdlexercise}
+
+\newsection{Input and Output}
+
+SML contains a TextIO structure as part of the basis library. The signature of the functions in the TextIO structure is given in appendix~\ref{textiostruct}. It is possible to read and write strings to streams using this library of functions. The usual standard input, standard output, and standard error streams are predefined. 
+
+\begin{kdlexample}
+Here is an example of reading a string from the keyboard. Explode is used on the string to show the vector type is really the string type. It also shows how to print something to a stream.
+\begin{lstlisting}[numbers=none]
+- val s = TextIO.input(TextIO.stdIn);
+hi there
+val s = "hi there\n" : vector
+- explode(s);
+val it = [#"h",#"i",#" ",#"t",#"h",#"e",
+            #"r",#"e",#"\n"] : char list
+- TextIO.output(TextIO.stdOut,s^"How are you!\n");
+hi there
+How are you!
+val it = () : unit
+\end{lstlisting}
+
+\end{kdlexample}
+
+Since streams can be directed to files, the screen, or across the network, there really isn't much more to input and output in SML. Of course if you are opening your own stream it should be closed when you are done with it. Program termination will also close any open streams. 
+
+There are some TextIO functions that may or may not return a value. In these cases an {\small \verb+option+} is returned. An {\small \verb+option+} is a value that is either {\small \verb+NONE+} or {\small \verb+SOME+} $value$. An option is SML's way of dealing with functions that may or may not succeed. Functions must always return a value or end with an exception. To prevent the exception handling mechanism from being used for input operations that may or may not succeed, this idea of an option was created. Options fit nicely into the strong typing the SML provides.
+
+\begin{kdlexample}
+The {\small \verb+input1+} function of the TextIO structure reads exactly one character from the input and returns  an {\small \verb+option+} as a result. The reason it returns an {\small \verb+option+} and not the character directly is because the stream might not be ready for reading. The {\small \verb+valOf+} function can be used to get the value of an {\small \verb+option+} that is not {\small \verb+NONE+}.
+
+\begin{lstlisting}[numbers=none]
+- val u = TextIO.input1(TextIO.stdIn);
+hi there
+val u = SOME #"h" : elem option
+- =   
+= ^C
+Interrupt
+- u;   
+val it = SOME #"h" : elem option
+- val v = valOf(u);
+val v = #"h" : elem
+\end{lstlisting}
+\end{kdlexample}
+
+\newsection{Programming with Side-effects}
+\label{sideeffects}
+
+Standard ML is not a pure functional language. It is possible to write programs with side effects, such as reading from and writing to streams. To write imperative programs the language should support sequential execution, variables, and possibly loops. All three of these features are available in SML. The following sections show you how to use each of these features. 
+
+\subsection{Variable Declarations}
+There is only one kind of variable in Standard ML. Variables are called references. It is interesting to note that you cannot update an integer, real, string, or any other type of value in SML. All values are immutable. They cannot be changed once created. That is a nice feature of a language because then you don't have to worry about the distinction between a reference to a value and the value itself.
+
+A reference in Standard ML is typed. It is either a reference to an {\em int}, or a {\em string}, or some other type of data. References can be mutated. So a reference can be updated to point to a new value as your program executes. Declaring and using a reference variable is described in the example below.
+
+\newpage
+\begin{kdlexample}
+In SML a variable is declared by creating a reference to a value of a particular type.
+\begin{lstlisting}[numbers=none]
+- val x = ref 0;
+val x = ref 0 : int ref
+\end{lstlisting}
+
+The exclamation point is used to refer to the value a reference points to. This is called the dereference operator. It is the similar to the star (i.e. {\small \verb+*+}) in C++. 
+
+\begin{lstlisting}[numbers=none]
+- !x;
+val it = 0 : int
+- x := !x + 1;
+val it = () : unit
+- !x;
+val it = 1 : int
+\end{lstlisting}
+\end{kdlexample}
+
+The assignment operator (i.e. {\small \verb+:=+}) operator updates the reference variable to point to a new value. The result of assignment is the empty tuple which has a special type called {\small \verb+unit+}. Imperative programming in SML will often result in the unit type.  Unlike ordinary identifiers you can bind to values using a {\small \verb+let val+} $id$ {\small \verb+=+} $Expr$ {\small \verb+in+} $Expr$ {\small \verb+end+}, a reference can truly be updated to point to a new value. 
+
+it should be noted that references in Standard ML are typed. When a reference is created it can only point to a value of the same type it was originally created to refer to. This is unlike references in Python, but is similar to references in Java. A reference refers to a particular type of data.
+
+\subsection{Sequential Execution}
+
+If a program is going to assign variables new values or read from and write to streams it must be able to execute statements or expressions sequentially. There are two ways to write a sequence of expressions in SML. When you write a {\small \verb+let val+} $id$ {\small \verb+=+} $Expr$ {\small \verb+in+} $Expr$ {\small \verb+end+} expression, the $Expr$ in between the {\small \verb+in+} and {\small \verb+end+} may be a sequence of expressions. A sequence of expressions is semicolon separated. 
+
+\begin{kdlexample}
+\label{mlsequence}
+This demonstrates how to write a sequence of expressions.
+\begin{lstlisting}[numbers=none]
+let val x = ref 0
+in
+  x:= !x + 1;
+  TextIO.output(TextIO.stdOut,"The new value of x is "^
+                Int.toString(!x)^"\n");
+  !x
+end
+\end{lstlisting}
+
+Evaluating this expression produces the following output.
+\begin{lstlisting}[numbers=none]
+The new value of x is 1
+val it = 1 : int
+\end{lstlisting}
+\end{kdlexample}
+
+In example~\ref{mlsequence} semicolons separate the expressions in the sequence. Notice that semicolons don't terminate each line as in C++ or Java. Semicolons in SML are expression separators, not statement terminators. The last expression in a sequence of expressions is the return value of the expression. The {\small \verb+!x+} is the last expression in the sequence above so {\small \verb+1+} is returned as the value.  
+
+There are times when you may wish to evaluate a sequence of expressions in the absence of a {\small \verb+let+} expression. In that case the sequence of expressions may be surrounded by parens. A left paren can start a sequence of expressions terminated by a right paren. The sequence of expressions is semicolon separated in either case. 
+
+\begin{kdlexample}
+Here is some code that prints the value of x to the screen and then returns x + 1.
+
+\begin{lstlisting}[numbers=none]
+(TextIO.output(TextIO.stdOut,"The value of x is " ^ 
+ Int.toString(x);
+ x+1)
+ \end{lstlisting}
+ \end{kdlexample}
+ 
+
+\subsection{Iteration}
+
+Strictly speaking, variables and iteration are not needed in a functional language. Parameters can be passed in place of variable declarations. Recursion can be used in place of iteration. However, there are times when an iterative function might make more sense. For instance, when reading from a stream it might be more efficient to read the stream in a loop, especially when the stream might be large. A recursive function could overflow the stack in that case unless the recursive function were tail recursive and could be optimized to remove the recursive call. 
+
+A while loop in SML is written as {\small \verb+while+} $Expr$ {\small \verb+do+} $Expr$. As is usual with while loops, the first $Expr$ must evaluate to a boolean value. If it evaluates to {\small \verb+true+} then the second $Expr$ is evaluated. This process is repeated until the first $Expr$ returns {\small \verb+false+}. 
+
+\newsection{Exception Handling}
+
+An exception \index{ML!exception handling} occurs in SML when a condition occurs that requires special handling. If no special handling is defined for the condition the program terminates. As with most modern languages, SML has facilities for handling these exceptions and for raising user-defined exceptions. 
+
+\newpage
+\begin{kdlexample}
+Consider the maxIntList function you wrote in \practice~\ref{maxIntList}. You probably had to figure out what to do if an empty list was passed to the function. One way to handle this is to raise an exception.
+\begin{lstlisting}
+exception emptyList;
+
+fun maxIntList [] = raise emptyList
+  | maxIntList (h::t) = Int.max(h,maxIntList t) handle 
+                              emptyList => h
+\end{lstlisting}
+\end{kdlexample}
+
+Invoking the maxIntList on an empty list can be handled using an exception handling\index{ML!exception handling} expression.
+The handle clause uses pattern matching to match the right exception handler. 
+To handle any exception the pattern {\small \verb+_+} can be used. The underscore matches anything. Multiple exceptions can be handled by using the vertical bar (i.e. {\small \verb+|+}) between the handlers. 
+
+\newsection{Encapsulation in ML}
+
+ML provides two language constructs that enable programmers to define new datatypes and hide their implementation details. The first of these language constructs we'll look at is the signature. The other construct is the structure.
+
+\subsection{Signatures}
+A signature\index{ML!signature} is a means for specifying a set of related functions and types without providing any implementation details. This is analogous to an interface in Java or a template in C++. 
+Consider the datatype consisting of a set of elements. A set is a group of elements with no duplicate values. Sets are very important in many areas of Computer Science and Mathematics. Set theory is an entire branch of mathematics. If we wanted to define a set in ML we could write a signature for it as follows. 
+
+\begin{kdlexample}
+\label{setsig}
+This is the signature of a group of set functions and a set datatype. Notice this datatype is parameterized by a type variable so this could be a signature for a set of anything. You'll also notice that while the type parameter is $'a$ there are type variables named $''a$ within the signature. This is because some of these functions rely on the equals operator. In ML the equals operator is polymorphic and cannot be instantiated to a type. When this signature is used in practice the $'a$ and $''a$ types will be correctly instantiated to the same type. 
+\begin{lstlisting}
+signature SetSig =
+    sig
+	exception Choiceset
+	exception Restset
+	datatype 'a set = Set of 'a list 
+	val emptyset 	: 'a set
+	val singleton 	: 'a -> 'a set
+	val member 		: ''a -> ''a set -> bool
+	val union 	 	: ''a set -> ''a set -> ''a set
+	val intersect 		: ''a set -> ''a set -> ''a set
+	val setdif 		: ''a set -> ''a set -> ''a set
+	val card 	 	: 'a set -> int
+	val subset 	 	: ''a set -> ''a set -> bool
+	val simetdif 		: ''a set -> ''a set -> ''a set
+	val forall 	 	: ''a set -> (''a -> bool) -> bool
+	val forsome 		: ''a set -> (''a -> bool) -> bool
+	val forsomeone 	: 'a set -> ('a -> bool) -> bool 		     
+    end
+\end{lstlisting} 
+\end{kdlexample}
+
+Before a signature can be used, each of these functions must be implemented  in a structure that implements the signature. This encapsulation allows a programmer to write code that uses these set functions without regards to their implementation. An implementation must be provided before the program can be run. However, if a better implementation comes along later it can be substituted without changing any of the code that uses the set signature. 
+
+\subsection{Implementing a Signature}
+
+To implement a signature we can use the struct construct that we've seen before. In this case it is done as follows.
+
+\begin{kdlexample}
+\label{setstruct}
+Here is an implementation of the set signature.
+\begin{lstlisting}
+(***** An Implementation of Sets as a SML datatype *****)
+
+structure Set : SetSig =
+struct
+
+exception Choiceset
+exception Restset
+
+datatype 'a set = Set of 'a list 
+
+val emptyset = Set []
+
+fun singleton e = Set [e]
+
+fun member e (Set [])     = false 
+  | member e (Set (h::t)) = (e = h) orelse member e (Set t)
+
+fun notmember element st = not (member element st)
+
+fun union (s1 as Set L1) (s2 as Set L2) =
+	let fun noDup e = notmember e s2
+ 	in
+		Set ((List.filter noDup L1)@(L2))
+	end
+
+...
+end
+\end{lstlisting} 
+\end{kdlexample}
+
+Of course, the entire implementation of all the set functions in the signature is required. Some of these functions are left as an exercise.
+
+\begin{kdlexercise}
+\label{setfun}
+\begin{enumerate}
+\item Write the card function. Cardinality of a set is the size of the set. 
+\item Write the intersect function. Intersection of two sets are just those elements that the two sets have in common. Sets do not contain duplicate elements. 
+%\item Write the setdif function.
+%\item Rewrite union using intersect and setdif.
+%\item Challenge: try to write some of these functions using higher-order function calls. 
+\end{enumerate}
+\end{kdlexercise}
+
+\newsection{Type Inference}
+
+Perhaps Standard ML's strongest point is the formally proven soundness of its type inference system. ML's type inference\index{ML!type inference} system is guaranteed to prevent any run-time type errors from occurring in a program. This turns out to prevent many run-time errors from occurring in your programs. Projects like the Fox Project\cite{fox} have shown that ML can be used to produce highly reliable large software systems.
+
+The origins of type inference include Haskell Curry\index{Curry!Haskell} and Robert Feys\index{Feys!Robert} who in 1958 devised a type inference algorithm for the simply typed lambda calculus. In 1969 Roger Hindley\index{Hindley!Roger} worked on extending this type inference algorithm. In 1978 Robin Milner\index{Milner!Robin} independently from Hindley devised a similar type inference system proving its soundness. In 1985 Luis Damas\index{Damas!Luis} proved Milner's algorithm was complete and extended it to support polymorphic references. This algorithm is called the Hindley-Milner type inference\index{type inference!Hindley-Milner} algorithm or the Milner-Damas algorithm. The type inference system is based on a very powerful concept called unification.
+
+Unification is the process of using type inference rules to bind type variables to values. The type inference rules look something like this.
+
+{\scshape (If-Then)} \[\frac{\varepsilon\vdash e_1:bool,~~\varepsilon\vdash e_2:\alpha,~~~\varepsilon\vdash e_3:\beta,~~~\alpha=\beta}{\varepsilon\vdash if~e_1~then~e_2~else~e_3 : \alpha}\]
+
+This rule says that for an if-then expression to be correctly typed, the type of the first expression must be a {\small \verb+bool+} and the types of the second and third expression must be unifiable. If those preconditions hold, then the type of the if-then expression is given by the type of either of the second two expressions (since they are the same). Unification happens when $\alpha=\beta$ in the rule above. The $\varepsilon$ is the presence of type information that is used when determining the types of the three expressions and is called the type environment.
+
+Here are two examples that suggest how the type inference mechanism works.
+
+\begin{kdlexample}
+In this example we determine the type of the following function.
+\begin{lstlisting}[numbers=none]
+fun f(nil,nil) = nil
+  | f(x::xs,y::ys) = (x,y)::f(xs,ys);
+\end{lstlisting} 
+
+The function f takes one parameter, a pair.
+
+\begin{lstlisting}[numbers=none]
+	f: 'a * 'b -> 'c
+\end{lstlisting} 
+
+From the nature of the argument patterns, we conclude that the three unknown types must be lists.
+
+\begin{lstlisting}[numbers=none]
+	f: ('p list) * ('s list) -> 't list
+\end{lstlisting} 
+
+The function imposes no constraints on the domain lists, but the codomain list must be a list of pairs because of the cons operation {\small \verb+(x,y)::+}.
+We know {\small \verb+x : 'p+} and {\small \verb+y : 's+}. Therefore {\small \verb+'t = 'p * 's+}.
+
+\begin{lstlisting}[numbers=none]
+	f: 'p list * 's list -> ('p * 's) list
+\end{lstlisting} 
+
+where {\small \verb+'p+} and {\small \verb+'s+} are any ML types.
+
+\end{kdlexample}
+
+
+\begin{kdlexample}
+In this example the type of the function {\small \verb+g+} is inferred. 
+\begin{lstlisting}
+fun g h x = if null x then nil
+            else 
+              if h (hd x) then g h (tl x) 
+              else (hd x)::g h (tl x);
+\end{lstlisting} 
+
+The function g takes two parameters, one at a time.
+\begin{lstlisting}[numbers=none]
+	g: 'a -> 'b -> 'c
+\end{lstlisting} 
+
+The second parameter, x, must serve as an argument to {\small \verb+null+}, {\small \verb+hd+}, and {\small \verb+tl+}; it must be a list.
+
+\begin{lstlisting}[numbers=none]
+	g: 'a -> ('s list) -> 'c
+\end{lstlisting} 
+
+The first parameter, {\small \verb+h+}, must be a function since it is applied to {\small \verb+hd x+}, and its domain type must agree with the type of elements in the list.
+In addition, {\small \verb+h+} must produce a boolean result because of its use in the conditional expression.
+
+\begin{lstlisting}[numbers=none]
+	g: ('s -> bool) -> ('s list) -> 'c
+\end{lstlisting} 
+
+The result of the function must be a list since the base case returns {\small \verb+nil+}.
+The result list is constructed by the code {\small \verb+(hd x)::g h (tl x)+}, which adds items of type {\small \verb+'s+} to the resulting list.
+
+Therefore, the type of {\small \verb+g+} must be:
+
+\begin{lstlisting}[numbers=none]
+	g: ('s -> bool) -> 's list -> s list
+\end{lstlisting} 
+\end{kdlexample}
+\index{functional programming|)}
+\index{programming!functional|)}
+
+\newpage
+\newsection{Exercises}
+
+In the exercises below you are encouraged to write other functions that may help you in your solutions. You might have better luck with some of the harder ones if you solve a simpler problem first that can be used in the solution to the harder problem.
+
+You may wish to put your solutions to these problems in a file and then 
+\begin{lstlisting}[numbers=none]
+- use "thefile";
+\end{lstlisting}
+\noindent in SML. This will make writing the solutions easier. You can try the solutions out by placing tests right within the same file. You should always comment any code you write. Comments in SML are preceded with a {\small \verb+(*+} and terminated with a {\small \verb+*)+}.
+
+
+\begin{enumerate}
+\item Reduce $(\lambda z.z+z)((\lambda x.\lambda y.x+y)~4~3)$ by normal order and applicative order reduction strategies. Show the steps. 
+\item How does the SML interpreter respond to evaluating each of the following expressions? Evaluate each of these expression in ML and record what the response of the ML interpreter is. 
+\label{expressions}
+\begin{enumerate}
+\item {\small \verb+8 div 3;+}
+\item {\small \verb+8 mod 3;+}
+\item {\small \verb+"hi"^"there";+}
+\item {\small \verb+8 mod 3 = 8 div 3 orelse 4 div 0 = 4;+}
+\item {\small \verb+8 mod 3 = 8 div 3 andalso 4 div 0 = 4;+}
+\end{enumerate}
+\item Describe the behavior of the {\small \verb+orelse+} operator in exercise~\ref{expressions} by writing an equivalent {\small \verb+if then+} expression. You may use nested if expressions. Be sure to try your solution to see you get the same result.
+\item Describe the behavior of the {\small \verb+andalso+} operator in exercise~\ref{expressions} by writing an equivalent {\small \verb+if then+} expression. Again you can use nested if expressions. 
+\item Write an expression that converts a character to a string.
+\item Write an expression that converts a real number to the next lower integer.
+\item Write an expression that converts a character to an integer.
+\item Write an expression that converts an integer to a character.
+\item What is the signature of the following functions? Give the signature and an example of using each function.
+\begin{enumerate}
+\item hd
+\item tl
+\item explode
+\item concat
+\item :: - This is an infix operator. Use the prefix form of {\small \verb+op ::+} to get the signature.
+\end{enumerate}
+\item  The greatest common divisor of two numbers, $x$ and $y$, can be defined recursively. If $y$ is zero then $x$ is the greatest common divisor. Otherwise, the greatest common divisor of $x$ and $y$ is equal to the greatest common divisor of $y$ and the remainder $x$ divided by $y$. Write a recursive function called {\small \verb+gcd+} to determine the greatest common divisor of $x$ and $y$.
+\item Write a recursive function called {\small \verb+allCaps+} that given a string returns a capitalized version of the string.
+\label{allCaps}
+\item  Write a recursive function called {\small \verb+firstCaps+} that given a list of strings, returns a list where the first letter of each of the original strings is capitalized.
+\item Using pattern matching, write a recursive function called {\small \verb+swap+} that swaps every pair of elements in a list. So, if  {\small \verb+[1,2,3,4,5]+} is given to the function it returns {\small \verb+[2,1,4,3,5]+}.
+\item Using pattern matching, write a function called {\small \verb+rotate+} that rotates a list by $n$ elements. So, {\small \verb+rotate(3,[1,2,3,4,5])+} would return {\small \verb+[4,5,1,2,3]+}.
+\label{rotatefun}
+\item Use pattern matching to write a recursive function called {\small \verb+delete+} that deletes the $n^{th}$ letter from a string. So, {\small \verb+delete(3,"Hi there")+} returns {\small \verb+"Hi here"+}. HINT: This might be easier to do if it were a list.
+\label{deletefun}
+
+\item Again, using pattern matching write a recursive function called {\small \verb+power+} that computes $x^n$. It should do so with $O(log~n)$ complexity.
+\item Rewrite the {\small \verb+rotate+} function of exercise~\ref{rotatefun} calling it {\small \verb+rotate2+} to use a helper function so as to guarantee $O(n)$ complexity where $n$ is the number of positions to rotate. 
+\item Rewrite exercise~\ref{rotatefun}'s {\small \verb+rotate(n,lst)+} function calling it {\small \verb+rotate3+} to guarantee that less than $l$ rotations are done where $l$ is the length of the list. However, the outcome of rotate should be the same as if you rotated {\small \verb+n+} times. For instance, calling the function as {\small \verb+rotate3(6,[1,2,3,4,5])+} should return {\small \verb+[2,3,4,5,1]+} with less than 5 recursive calls to {\small \verb+rotate3+}.
+\item Rewrite the {\small \verb+delete+} function from exercise~\ref{deletefun} calling it {\small \verb+delete2+} so that it is curried.  
+\item Write a function called {\small \verb+delete5+} that always deletes the fifth character of a string. 
+\item Use a higher-order function to find all those elements of a list of integers that are even.
+\item Use a higher-order function to find all those strings that begin with a lower case letter.
+\item Use a higher-order function to write the function {\small \verb+allCaps+} from exercise~\ref{allCaps}.
+\item Write a function called {\small \verb+find(s,file)+} that prints the lines from the file named {\small \verb+file+} that contain the string {\small \verb+s+}. You can print the lines to {\small \verb+TextIO.stdOut+}. The {\small \verb+file+} should exist and should be in the current directory.
+\item Write a higher-order function called {\small \verb+transform+} that applies the same function to all elements of a list transforming it to the new values. However, if an exception occurs when transforming an element of the list, the original value in the given list should be used. For instance, 
+\begin{lstlisting}[numbers=none]
+- transform (fn x => 15 div x) [1,3,0,5]
+val it = [15,5,0,3] : int list
+\end{lstlisting}
+\item The natural numbers can be defined as the set of terms constructed from $0$ and the $succ(n)$ where $n$ is a natural number. Write a datatype called {\small \verb+Natural+} that can be used to construct natural numbers like this. Use the capital letter O for your zero value so as not to be confused with the integer $0$ in SML. 
+\label{nats}
+\item Write a {\small \verb+convert(x)+} function that given a natural number like that defined in exercise~\ref{nats} returns the integer equivalent of that value.  
+\item Define a function called {\small \verb+add(x,y)+} that given {\small \verb+x+} and {\small \verb+y+}, two natural numbers as described in exercise~\ref{nats}, returns a natural number that represents the sum of {\small \verb+x+} and {\small \verb+y+}. For example, 
+\label{addit}
+\begin{lstlisting}[numbers=none]
+- add(succ(succ(O)),succ(O))
+val it = succ(succ(succ(O))) : Natural
+\end{lstlisting}
+You may NOT use {\small \verb+convert+} or any form of it in your solution.
+\item Define a function called {\small \verb+mul(x,y)+} that given {\small \verb+x+} and {\small \verb+y+}, two natural numbers as described in exercise~\ref{nats}, returns a natural that represents the product of {\small \verb+x+} and {\small \verb+y+}. You may NOT use {\small \verb+convert+} or any form of it in your solution.
+\item Using the {\small \verb+add+} function in exercise~\ref{addit}, write a new function {\small \verb+hadd+} that uses the higher order function called {\small \verb+foldr+} to add together a list of natural numbers. 
+\end{enumerate}
+
+\newpage
+\newsection{Solutions to Practice Problems}
+
+These are solutions to the \practices. You should only consult these answers after you have tried each of them for yourself first. \Practices are meant to help reinforce the material you have just read so make use of them. 
+
+\kdlsolution{commutative}
+
+\begin{kdlsol}
+
+Addition is not commutative in Pascal or Java. The problem is that a function call, which may be one or both of the operands to the addition operator, could have a side-effect. In that case, the functions must be called in order. If no order is specified within expression evaluation then you can't even reliably write code with side-effects within an expression.
+
+Here's another example of the problem with side-effects within code. In the code below, it was observed that when the code was compiled with one C++ compiler it printed 1,2 while with another compiler it printed 1,1. In this case, the language definition is the problem. The C++ language definition doesn't say what should happen in this case. The decision is left to the compiler writer. 
+
+\begin{lstlisting}[language=C++,numbers=none]
+int x = 1;
+cout << x++ << x << endl;
+\end{lstlisting}
+
+The \practice writes 17  as written. If the expression were b+a() then 15 would be written.  
+\end{kdlsol}
+
+\kdlsolution{applicativeorder}
+\begin{kdlsol}
+With either normal order or applicative order function application is still left-associative. There is no choice for the initial redex. 
+
+$\underline{(\lambda xyz.xz(yz))(\lambda x.x)}(\lambda xy.x)$\\
+$\Rightarrow(\lambda yz.\underline{(\lambda x.x) z} (yz))(\lambda xy.x)$\\
+$\Rightarrow\underline{(\lambda yz.z (yz))(\lambda xy.x)}$\\
+$\Rightarrow\lambda z.z (\underline{(\lambda xy.x) z})$\\
+$\Rightarrow\lambda z.z (\lambda y.z)\Box$
+\end{kdlsol}
+
+\kdlsolution{reduce}
+
+\begin{kdlsol}
+{\bf Normal Order Reduction}
+
+$\underline{(\lambda x.y)((\lambda x.xx)(\lambda x.xx))}$\\
+$\Rightarrow y$
+
+{\bf Applicative Order Reduction}
+
+$(\lambda x.y)(\underline{(\lambda x.xx)(\lambda x.xx)})$\\
+$\Rightarrow(\lambda x.y)(\underline{(\lambda x.xx)(\lambda x.xx)})$\\
+$\Rightarrow(\lambda x.y)(\underline{(\lambda x.xx)(\lambda x.xx)})$\\
+$\Rightarrow(\lambda x.y)(\underline{(\lambda x.xx)(\lambda x.xx)})$\\
+...
+
+You get the idea.
+\end{kdlsol}
+
+\kdlsolution{express}
+
+\begin{kdlsol}
+\begin{lstlisting}[numbers=none]
+x div 6
+Real.round(Real.fromInt(x) * y)
+x / 6.3
+x mod y
+\end{lstlisting}
+\end{kdlsol}
+
+\kdlsolution{factorial}
+
+\begin{kdlsol}
+\begin{lstlisting}[numbers=none]
+fun factorial(n) = if n=0 then 1 else n*factorial(n-1)
+\end{lstlisting}
+\end{kdlsol}
+
+\kdlsolution{fib}
+
+\begin{kdlsol}
+The recursive definition is $fib(0) = 0$, $fib(1) = 1$, $fib(n)=fib(n-1)+fib(n-2)$. The recursive function is:
+\begin{lstlisting}[numbers=none]
+fun fib(n) = if n = 0 then 1 else
+             if n = 1 then 1 else
+             fib(n-1) + fib(n-2)
+\end{lstlisting}
+\end{kdlsol}
+
+\kdlsolution{invalidlists}
+
+\begin{kdlsol}
+The solutions below are example solutions only. Others exist. However, the problem with each invalid list is not debatable.
+\begin{enumerate}
+\item You cannot cons a character onto a string list. \\\verb+"a"::["beautiful day"]+
+\item You cannot cons two strings. The second operand must be a list. \\\verb+"hi"::["there"]+
+\item The element comes first in a cons operation and the list second. \\\verb+"you"::["how","are"]+
+\item Lists are homogeneous. Reals and integers can't be in a list together. \\\verb+[1.0,2.0,3.5,4.2]+
+\item Append is between two lists.\\\verb+2::[3,4]+ or {\small \verb+[2]@[3,4]+}
+\item Cons works with an element and a list, not a list and an element. \\\verb+3::[]+
+\end{enumerate}
+\end{kdlsol}
+
+\kdlsolution{explode}
+
+\begin{kdlsol}
+\begin{lstlisting}[numbers=none]
+fun explode(s) = 
+  if s = "" then []
+  else String.sub(s,0)::
+       (explode(String.substring(s,1,String.size(s)-1)))
+\end{lstlisting}
+\end{kdlsol}
+
+\kdlsolution{appendreverse}
+
+\begin{kdlsol}
+\begin{lstlisting}[numbers=none]
+fun reverse(L) = 
+  if null L then [] 
+  else append(reverse(tl(L)),[hd(L)])
+\end{lstlisting}
+\end{kdlsol}
+
+\kdlsolution{patternmatch}
+
+\begin{kdlsol}
+\begin{lstlisting}[numbers=none]
+fun reverse([]) = []
+  | reverse(h::t) = reverse(t)@[h]
+\end{lstlisting}
+\end{kdlsol}
+
+\kdlsolution{lettest}
+
+\begin{kdlsol}
+\begin{lstlisting}
+let val x = 10 
+in
+   (* 1. Value of x = 10 *) 
+   let val x = x+1
+   in
+     (* 2. Value of x = 11 (hidden x still is 10) *)
+     x
+   end;  
+   (* 3. Value of x = 10 (hidden x is visible again) *)
+   x  
+end
+\end{lstlisting}
+\end{kdlsol}
+
+\newpage
+\kdlsolution{intlist}
+
+\begin{kdlsol}
+\begin{lstlisting}[numbers=none]
+datatype intlist = nil' | cons of int * intlist;
+\end{lstlisting}
+\end{kdlsol}
+
+\kdlsolution{maxIntList}
+\begin{kdlsol}
+\begin{lstlisting}[numbers=none]
+fun maxIntList nil' = valOf(Int.minInt)
+  | maxIntList (cons(x,xs)) = Int.max(x,maxIntList xs)
+\end{lstlisting}
+or
+\begin{lstlisting}[numbers=none]
+fun maxIntList (cons(x,nil')) = x
+  | maxIntList (cons(x,xs)) = Int.max(x,maxIntList xs)
+\end{lstlisting}
+The second solution will cause a pattern match nonexhaustive warning. That should be avoided, but is OK in this case. The  second solution will raise a pattern match exception if an empty list is given to the function. See the section on exception handling for a better solution to this problem.
+\end{kdlsol}
+
+\kdlsolution{expcalls}
+
+\begin{kdlsol}
+The first step in the solution is to determine the number of calls required for values of {\small \verb+n+}. Consulting figure~\ref{fibtree} shows us that the number of calls are 1, 1, 3, 5, 9, 15, 25, etc. The next number in the sequence can be found by adding together two previous plus one more for the initial call. 
+
+The solution is that for $n \geq 3$ the function $1.5^{n}$ bounds the number of calls on the lower side while $2^{n}$ bounds it on the upper side. Therefore, the number of calls increases exponentially.
+\end{kdlsol}
+
+\kdlsolution{reversecomplexity}
+
+\begin{kdlsol}
+The cons operation is called $n$ times where $n$ is the length of the first list when append is called. When reverse is called it calls append with $n-1$ elements in the first list the first time. The first recursive call to reverse calls append with $n-2$ elements in the first list. The second recursive call to reverse calls append with $n-3$ elements in the first list. If we add up $n-1 + n-2 + n-3 + $... we end up with $\sum_{i=1}^{n-1} i = ((n-1)n)/2$. Multiplying this out leads to an $n^2$ term and the overall complexity of reverse is $O(n^2)$. 
+
+\end{kdlsol}
+
+\newpage
+\kdlsolution{runtimestack}
+
+\begin{kdlsol}
+\begin{figure}[htb]
+\centering
+\includegraphics[width=4cm]{facstack}
+\caption{The run-time stack when factorial(6) is called at its deepest point}
+\label{facstack}
+\end{figure}
+\end{kdlsol}
+
+\kdlsolution{fastreverse}
+\label{fastrevsol}
+
+\begin{kdlsol}
+This solution uses the accumulator pattern and a helper function to implement a linear time reverse.
+\begin{lstlisting}
+fun reverse(L) = 
+    let fun helprev (nil, acc) = acc
+          | helprev (h::t, acc) = helprev(t,h::acc)
+    in
+      helprev(L,[])
+    end
+\end{lstlisting}
+
+\end{kdlsol}
+
+\kdlsolution{curry}
+
+\begin{kdlsol}
+This solution is surprisingly hard to figure out. In the first, f is certainly an uncurried function (look at how it is applied). The second requires f to be curried. 
+
+\begin{lstlisting}[numbers=none]
+- fun curry f x y = f(x,y)
+val curry = fn : ('a * 'b -> 'c) -> 'a -> 'b -> 'c
+
+- fun uncurry f (x,y) = f x y
+val uncurry = fn : ('a -> 'b -> 'c) -> 'a * 'b -> 'c
+\end{lstlisting}
+\end{kdlsol}
+
+\newpage
+\kdlsolution{map}
+
+\begin{kdlsol}
+The first takes a list of lists of integers and adds one to each integer of each list in the list of lists. \\
+
+The second function takes a list of functions that all take the same type argument, say {\small \verb+a'+}. The function returns a list of functions that all take an {\small \verb+a' list+} argument. The example below might help. The list of functions that is returned by {\small \verb+(map map)+} is suitable to be used as an argument to the {\small \verb+construction+} function discussed earlier in the chapter.
+\begin{lstlisting}[numbers=none]
+- map (map add1);
+val it = fn : int list list -> int list list
+
+(map map);
+stdIn:63.16-64.10 Warning: type vars not generalized because 
+of value restriction are instantiated to dummy types 
+(X1,X2,...)
+val it = fn : (?.X1 -> ?.X2) list -> 
+                      (?.X1 list -> ?.X2 list) list
+- fun double x = 2 * x;
+val double = fn : int -> int
+- val flist = (map map) [add1,double];
+val flist = [fn,fn] : (int list -> int list) list
+- construction flist [1,2,3];
+val it = [[2,3,4],[2,4,6]] : int list list
+\end{lstlisting}
+\end{kdlsol}
+
+\kdlsolution{foldlvsfoldr}
+
+\begin{kdlsol}
+\verb+foldl+ is left-associative and {\small \verb+foldr+} is right-associative. 
+\begin{lstlisting}[numbers=none]
+- foldr op :: nil [1,2,3];
+val it = [1,2,3] : int list
+- foldr op @ nil [[1],[2,3],[4,5]];       
+val it = [1,2,3,4,5] : int list
+\end{lstlisting}
+\end{kdlsol}
+
+\kdlsolution{filterfun}
+
+\begin{kdlsol}
+\begin{lstlisting}[numbers=none]
+- List.filter (fn x => x mod 7 = 0) [2,3,7,14,21,25,28];
+val it = [7,14,21,28] : int list
+- List.filter (fn x => x > 10 orelse x = 0) 
+          [10, 11, 0, 5, 16, 8];
+val it = [11,0,16] : int list
+\end{lstlisting}
+\end{kdlsol}
+
+\newpage
+\kdlsolution{cpslenrun}
+\begin{kdlsol}
+\begin{lstlisting}[numbers=none]
+cpslen [1,2,3] (fn v => v) 
+= cpslen [2,3] (fn w => ((fn v => v) (1 + w)))
+= cpslen [3] 
+       (fn x => ((fn w => ((fn v => v) (1 + w)))(1 + x)))
+= cpslen [] 
+       (fn y => ((fn x => ((fn w => ((fn v => v) 
+       (1 + w)))(1 + x)))(1 + y)))
+= (fn y => ((fn x => ((fn w => ((fn v => v) 
+       (1 + w)))(1 + x)))(1 + y))) 0
+= (fn x => ((fn w => ((fn v => v) (1 + w)))(1 + x))) 1
+= (fn w => ((fn v => v) (1 + w))) 2
+= (fn v => v) 3
+= 3
+\end{lstlisting}
+\end{kdlsol}
+
+\kdlsolution{pathfun}
+
+\begin{kdlsol}
+\begin{lstlisting}
+datatype bintree = termnode of int 
+       | binnode of int * bintree * bintree;
+        
+val tree = (binnode(5,binnode(3,termnode(4),binnode(8,
+            termnode(5),termnode(4))), termnode(4)));
+
+fun depth (termnode _) = 0
+  | depth (binnode(_,t1,t2)) = Int.max(depth(t1),depth(t2))+1
+   
+fun cpsdepth (termnode _) k = k 0
+  | cpsdepth (binnode(_,t1,t2)) k = 
+       Int.max(cpsdepth t1 (fn v => (k (1 + v))), 
+               cpsdepth t2 (fn v => (k (1 + v))))
+\end{lstlisting}
+\end{kdlsol}
+
+\kdlsolution{setfun}
+
+\begin{kdlsol}
+\begin{lstlisting}
+fun card (Set L) = List.length L;
+
+fun intersect (Set L1) S2 = 
+      Set ((List.filter (fn x => member x S2) L1))
+\end{lstlisting}
+
+\end{kdlsol}
+  
+\newpage
+\newsection{Additional Reading}
+
+Jeffrey Ullman's book on functional programming in Standard ML \cite{Ull97} is a very good introduction and reference for Standard ML. It is more thorough than the topics provided in this text and contains many topics not covered here including discussion of arrays, functors, and sharings along with a few of the Basis structures. The topics presented here and in the next chapter give you a good introduction to the ideas and concepts associated with functional programming. Given the online resources available for the Standard ML Basis library, Jeffrey Ullman's book, and the information present here, there should be enough for you to become a very proficient ML programmer. 
+  
+  
+  

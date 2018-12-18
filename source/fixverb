@@ -1,0 +1,1 @@
+cat $1 | sed 's/ \\\verb\+[^\+]*\+/\ {\\small&\}/g' | sed 's/ \\\verb\~[^\~]*\~/\ {\\small&\}/g'

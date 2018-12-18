@@ -1,0 +1,589 @@
+\typeout{LaTeX style option `notation', 
+  1993-07-29 by pdmosses@daimi.aau.dk.}
+
+% For usage see the accompanying file: notation.tex
+
+% Reverse comments concerning \scriptsize v. \footnotesize
+% if not using 10pt styles
+
+% Warning: \specifying overrides the following LaTeX commands:
+% \(	\)	\<	\>	\[	\]	\|	
+%	\&	\` \' \" \^	\\	\=
+%	\sub	\sup	~	\partial
+
+% Moreover, \specifyinglists changes various list parameters.
+
+% 1993-07-29:
+% - superfluous space in \specifying suppressed
+
+% 1993-03-15:
+% - alternative macros for formatting module outlines added
+
+% 1993-02-24:
+% - \@sanitize extended to " in \specifying
+
+% 1992-11-19: 
+% - vertical rules made thicker
+% - \xtuple added: allows {...\\...}{...} to produce
+%   < ...
+%     ... >...
+
+% 1992-03-10: major revision:
+% - {spec} made uniform (use \item[...] or \Item or \item)
+% - \enumeratingtrue, \enumeratingfalse removed
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PARAMETERS:
+
+\setcounter{secnumdepth}{6}	% affects \sectionlevel numbering 
+\setcounter{tocdepth}{6}	% affects \tableofcontents
+
+\newlength \indentlength 	% affects indents with \= and \item in specs
+\setlength \indentlength {2em}	% enough for item numbers of the form (nn)
+
+\newlength \compactparsep	% affects \parsep when \compactspecstrue
+\setlength \compactparsep {.2em}% enough for \up* etc.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TEMPORARIES:
+
+\newcounter {tempcounter}
+\newsavebox \tempbox
+\newlength  \templength 
+\newcommand \tempcommand {}
+\newif      \iftemp
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% NORMAL STRUTS:	(doublespace.sty changes \strut size)
+% N.B.  doublespace.sty doesn't seem compatible with NFSS!
+
+\newcommand \forcesize %
+ {\@ifundefined{doublespace}{}%
+   {\ifmmode\textstyle\else
+    \ifx\@currsize\normalsize\@normalsize\else\@currsize\fi\fi}}
+
+\newcommand \undoublespace %
+ {\def \baselinestretch {1}\forcesize\lineskip 0pt}
+%% default is \lineskip 1pt, giving uneven lines in {spec}s
+
+\newcommand \normalstrut %
+ {{\undoublespace\strut}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PEEP-AHEAD: 
+
+% Don't use { } as #1 !  Use \space instead.
+\long\def \@ifverynextchar#1#2#3{\let\@tempe #1% doesn't ignore spaces!
+	\def \@tempa {#2}\def \@tempb {#3}%
+	\futurelet \@tempc \@ifverynch}
+
+\def \@ifverynch{\ifx\@tempc\@tempe
+	\let \@tempd \@tempa \else
+	\let \@tempd \@tempb
+	\fi  \@tempd}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TOP-BOXED LINES:
+
+% \begin{insetlines}{STUFF}...\end{insetlines} is similar to
+% STUFF\begin{tabular}[t]{@{}l@{}}...\end{tabular}.
+
+\newenvironment{insetlines}[1]%
+ {\leavevmode\hbox\bgroup
+  \lineskip=0pt%
+  \lineskiplimit=1000pt%
+  \baselineskip=0pt%
+  \def \\{\insetcr{}{}}%
+  \def \={\insetcr{\nointerlineskip}{\hskip\indentlength}}%
+  \def \item {\@warning{\protect\item\space not allowed here!}???}%
+  #1\vtop\bgroup\hbox\bgroup\strut\ignorespaces}%
+ {\strut\egroup\egroup\egroup}
+
+\newcommand \insetcr [2]%
+ {\strut\egroup#1\hbox\bgroup\strut#2\ignorespaces}
+
+\newcommand \ruling
+ {\hskip0.12em\vrule width0.4pt\hskip\tabcolsep}%% was \,...0.2pt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% VOCABULARY:
+
+% Module identifications (titles):
+\newcommand \idefont {\bf}
+\newcommand \ide [1]{{\idefont#1}}
+
+% Languages:
+\@ifundefined{slide}%
+ {\newcommand \langfont {\sc}}%
+ {\newcommand \langfont {\rm}}
+\newcommand \lang [1]{{\langfont#1}}
+
+% Variables:
+\def \var #1{$\it\@ifverynextchar_{\var@@{#1}}{\var@{#1}}}	% \var x_i''
+\def \var@ #1{\@ifverynextchar'{\var@@@{#1}}{#1$\/}}
+\def \var@@ #1_#2{\var@{#1_{\hbox{$\scriptstyle#2$}}}}
+\def \var@@@ #1'{\var@{#1'}}
+
+% Constants and operations:
+
+\newcommand \confont {\sf}
+
+% Special symbols:
+\newcommand \JOIN {\mathbin{\,\rule[-.5\dp\strutbox]{0.20ex}{1\ht\strutbox}\,}}
+\newcommand \ampersand {?} \let\ampersand=\&
+\newcommand \MEET {\mathbin{\confont\ampersand}}
+\newcommand \SUB {\ifmmode\leq\else$\leq$\fi}
+\newcommand \SUP {\ifmmode\geq\else$\geq$\fi}
+\newcommand \INTO {\ifmmode\rightarrow\else$\rightarrow$\fi}
+\newcommand \into {\INTO\ }
+\newcommand \IMPLIES {\ifmmode\Rightarrow\else\strut$\Rightarrow$\fi}
+\newcommand \implies {\ \IMPLIES\ \ }
+\newcommand \HOLE {\ifmmode\Box\else\strut$\Box$\fi}
+\newcommand \hole {\HOLE\ }
+
+\@ifundefined{load}{}{
+ \load{\footnotesize}{\confont}}
+\newcommand \on [1]{\mbox{$_{\mbox{\footnotesize\confont#1}}$}}
+\newcommand \up [1]{\mbox{$^{\mbox{\footnotesize\confont#1}}$}}
+
+%N.B. \scriptsize\confont may not be available in 10pt format.
+%But OK for CUP book style!
+%\@ifundefined{load}{}{
+% \load{\scriptsize}{\confont}}
+%\newcommand \on [1]{\mbox{$_{\mbox{\scriptsize\confont#1}}$}}
+%\newcommand \up [1]{\mbox{$^{\mbox{\scriptsize\confont#1}}$}}
+
+\newcommand \tuple [1]%
+ {\ifmmode\langle\,#1\,\rangle\else$\langle\,$#1$\,\rangle$\fi}%%
+\newcommand \xtuple [2]%
+ {\ifmmode\langle\,#1\,\rangle\else$\langle\,$\(#1$\,\rangle$#2\)\fi}%%
+
+% Reserved Words:
+\newcommand \meta [1]{{\idefont#1}}
+
+\newcommand \INCLUDES {\meta{includes:}}
+\newcommand \includes {\INCLUDES\ \ }
+\newcommand \INTRODUCES {\meta{introduces:}}
+\newcommand \introduces {\INTRODUCES\ \ }
+\newcommand \GRAMMAR {\meta{grammar:}}
+\newcommand \grammar {\GRAMMAR\ \ }
+\newcommand \NEEDS {\meta{needs:}}
+\newcommand \needs {\NEEDS\ \ }
+\newcommand \PRIVATELY {\meta{privately}}
+\newcommand \privately {\PRIVATELY\ }
+\newcommand \CLOSED {\meta{closed}}
+\newcommand \closed {\CLOSED}%%
+\newcommand \OPEN {\meta{open}}
+\newcommand \open {\OPEN}%%
+\newcommand \EXCEPT {\meta{except}}
+\newcommand \except {\ \EXCEPT\ }%%
+\newcommand \CONT {{\rm(}{\em continued\/}{\rm)}}%% changed
+\newcommand \cont {\CONT}
+
+% Attributes:
+\newcommand \attr [1]{{\it#1\/}}
+
+\newcommand \FOR {\attr{for}}
+\newcommand \for {\FOR\ }
+\newcommand \ASSOC {\attr{associative}}
+\newcommand \assoc {\ASSOC}
+\newcommand \COMM {\attr{commutative}}
+\newcommand \comm {\COMM}
+\newcommand \IDMPT {\attr{idempotent}}
+\newcommand \idmpt {\IDMPT}
+\newcommand \UNITIS {\attr{unit is}}
+\newcommand \unitis {\UNITIS\ }
+\newcommand \RESTRICTED {\attr{restricted}}
+\newcommand \restricted {\RESTRICTED}
+\newcommand \STRICT {\attr{strict}}
+\newcommand \strict {\STRICT}
+\newcommand \LINEAR {\attr{linear}}
+\newcommand \linear {\LINEAR}
+\newcommand \INJECTIVE {\attr{injective}}
+\newcommand \injective {\INJECTIVE}
+\newcommand \TOTAL {\attr{total}}
+\newcommand \total {\TOTAL}
+\newcommand \PARTIAL {\attr{partial}}
+\renewcommand \partial {\PARTIAL}
+\newcommand \DISJOINT {\attr{disjoint}}
+\newcommand \disjoint {\DISJOINT}
+\newcommand \INDIVIDUAL {\attr{individual}}
+\newcommand \individual {\INDIVIDUAL}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SPECIFYING:
+ 
+\newif\ifspecifying
+\specifyingfalse
+
+\catcode`\"=\active%%
+
+\newcommand \specifying %
+ {\ifspecifying\else
+  \undoublespace\confont
+  \let\@@tilde=~%
+  \let~=\var%
+  \def \({\begin{insetlines}{}}%
+  \def \){\end{insetlines}}%
+  \def \<{\begin{insetlines}{\ruling}}%
+  \def \>{\end{insetlines}}%
+  \let\@dispmath=\[%
+  \let\@enddispmath=\]%
+  \def \displaymath {\@dispmath}%
+  \def \enddisplaymath {\@enddispmath\global\@ignoretrue}%
+  \def \[{\ifmmode[\mskip-2.4mu[\else$[\mskip-2.4mu[$\fi}%% was \!
+  \def \]{\ifmmode]\mskip-2.4mu]\else$]\mskip-2.4mu]$\fi}%% was \!
+  \def \|{\ifmmode\JOIN\else$\:\JOIN\:$\fi}%
+  \def \&{\ifmmode\MEET\else$\:\MEET\:$\fi}%
+  \def \sub {\SUB\ }%
+  \def \sup {\SUP\ }%
+  \def \'{{\tt\symbol{'15}}}%% undirected single quote
+  \def \`{{\tt\symbol{'22}}}%% undirected single quote
+  \def \"{{\tt\symbol{'42}}}%% undirected double quote
+  \def \^{{\tt\symbol{'136}}}%% ^
+  \catcode`\"=\active%%
+  \let \notation@sanitize = \@sanitize
+  \def \@sanitize{\notation@sanitize \@makeother\"}% %% % 93-07-29
+  \def "##1"{``{##1}''}%%
+  \specifyingtrue \fi}
+
+\catcode`\"=12%%
+
+\newcommand \notspecifying %
+ {\ifspecifying
+  \rm
+  \let~=\@@tilde%
+  \specifyingfalse \fi}
+
+% FOR USE IN TEXT:
+
+%% So " can be active in \form{"..."}:
+\newcommand \form {\begingroup\specifying\insertendgroupafter}
+\newcommand \insertendgroupafter [1]{#1\endgroup}
+\newcommand \qform {\form}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SPECIFYING LISTS:
+ 
+\newif\ifspecifyinglists
+\specifyinglistsfalse
+ 
+\newif\ifcompactspecs				%% 91-06-25
+\compactspecsfalse				%% 91-06-25
+
+\newlength \normalparindent 
+\setlength \normalparindent {\parindent}
+
+\newlength \normalparskip
+\setlength \normalparskip {\parskip}
+
+% Using LaTeX enum counters (4 levels deep):
+\def \numbercounter {\@enumctr}
+
+\newcommand \specifyinglists %
+ {\ifspecifyinglists\else
+  \specifying
+  \ifnum\@itempenalty<10000\@itempenalty -200\fi
+  \def \labelenumi {\scriptsize(\arabic{enumi})}%
+  \def \labelenumii {\scriptsize(\arabic{enumii})}%
+  \def \labelenumiii {\scriptsize(\arabic{enumiii})}%
+  \def \labelenumiv {\scriptsize(\arabic{enumiv})}%
+  \def \theenumi {(\arabic{enumi})}%
+  \def \theenumii {(\arabic{enumi}.\arabic{enumii})}%
+  \def \theenumiii {(\arabic{enumi}.\arabic{enumii}.\arabic{enumiii})}%
+  \def \theenumiv {(\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}.%
+      \arabic{enumiv})}%
+  \def \p@enumi{}%
+  \def \p@enumii{}%
+  \def \p@enumiii{}%
+  \def \p@enumiv{}%
+  \def \Item{\@item[\hfill$\bullet$]}%% @, \hfill inserted
+  \def \={\strut\\*\strut\hspace{\indentlength}\ignorespaces}%
+  \leftmargin=\indentlength
+  \leftmargini=\leftmargin
+  \leftmarginii=\leftmargin
+  \leftmarginiii=\leftmargin
+  \leftmarginiv=\leftmargin
+  \leftmarginv=\leftmargin
+  \leftmarginvi=\leftmargin
+  \labelsep=0.5em%% was 1ex%
+  \labelwidth=\leftmargin
+  \advance\labelwidth-\labelsep
+  \specifyingliststrue
+  \fi}
+
+\newcommand \notspecifyinglists %
+ {\ifspecifyinglists
+  \notspecifying
+  \fi}
+
+\newenvironment{spec}%
+ {\specifyinglists
+  \ifnum \@enumdepth >3 \@toodeep\else
+      \advance\@enumdepth \@ne 
+      \edef\@enumctr{enum\romannumeral\the\@enumdepth}\list
+      {\csname label\@enumctr\endcsname}{\usecounter
+        {\@enumctr}\def \makelabel ##1{##1\hfil}%
+	  \ifcompactspecs \setlength \itemsep {0pt plus 3pt}%% was 0pt
+		\setlength \parsep {\compactparsep}\fi}\fi}%
+ {\endlist}
+
+\newenvironment{displayspec}
+ {\begin{quote}\begin{spec}}%
+ {\end{spec}\end{quote}\global\@ignoretrue}
+
+\newenvironment{displayspec*}
+ {\displayspec\def\item{\@item[]}}%% changed
+ {\enddisplayspec}
+
+\newcommand \memo [1] {{\sl #1}}
+
+\newcommand \suspend [1]%	for inserting comments in specs
+ {\setcounter{tempcounter}{\value{\@enumctr}}\end{#1}}
+
+\newcommand \resume [1]%	must be paired with \suspend
+ {\begin{#1}\setcounter{\@enumctr}{\value{tempcounter}}}
+
+\newcommand \ruleline
+ {\ifhmode\strut\fi\vskip 1ex\nopagebreak\hrule\vskip 1ex}
+
+\newenvironment{info}% without hrules
+ {\notspecifyinglists
+  \list{}{\listparindent=\normalparindent
+    \parsep=\normalparskip
+    \leftmargin=-\indentlength}%
+  \item[]}%
+ {\endlist}
+
+\newenvironment{inforule}% with hrules
+ {\notspecifyinglists
+  \list{}{\listparindent=\normalparindent
+    \parsep=\normalparskip
+    \ifenumerating\leftmargin=-\indentlength\fi}%
+  \item[]\leavevmode\hrulefill\vrule height0pt width 0pt depth1ex\linebreak}%
+ {\hfill\null\\[-1ex]\null\hrulefill\endlist}
+
+\newcommand \skipbreak 
+ {\bigskip\pagebreak[2]}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MODULE ITEMS:
+%
+% Usage:
+%
+% \begin{spec}
+% \moduleitem{NAME}
+% \begin{spec} \item ... \end{spec}
+% ...
+% \end{spec}
+%
+% For outlines:
+%
+% \begin{spec}\moduleitemset{LONG NAME}
+% \moduleitem{NAME} \needs ...
+% ...
+% \end{spec}
+
+\newlength \moduleitemlength 
+\setlength \moduleitemlength {\indentlength}
+
+\newcommand \moduleitem {?}
+\newcommand \moduleitemnopad [1]{\item[\ide{#1}]\ \ignorespaces}
+\newcommand \nullmoduleitem %	
+ {\let\moduleitem=\moduleitemnopad	% overwritten by \moduleitemset
+  \setlength \moduleitemlength {\indentlength}}
+
+\nullmoduleitem
+
+\newcommand \moduleitemset [1]
+ {\let\moduleitem=\moduleitempad
+  \let\==\moduleitemindent
+  \settowidth \moduleitemlength {{\idefont #1 }}\ignorespaces}
+
+\newcommand \moduleitempad [1]
+ {\savebox{\tempbox}{{\idefont #1 }}%
+  \ifdim \wd\tempbox>\moduleitemlength 
+    \@warning{\protect\moduleitem: wider than argument of 
+             \protect\moduleitemset}\fi
+  \item[\hbox to\moduleitemlength{\idefont #1 \hfill}]\ \linebreak[1]\ignorespaces}
+
+\newcommand \moduleitemindent %
+ {\strut\\*\strut\hskip\labelsep\hskip\moduleitemlength\ignorespaces}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Alternative formatting for module outlines:
+
+%Usage:
+%
+%\begin{spec}
+%...
+%\begin{module}{NAME}
+%  \needsmodules{NAME1, ..., NAMEn.}
+%  \begin{module}{NAME1}
+%    \needs{...}
+%  \end{module}
+%  ...
+%  \nobody{NAMEi}
+%  ...
+%\end{module}
+%...
+%\end{spec}
+
+\newenvironment {module}[1]
+ {\item[\ide{#1}]\ \begin{spec}}
+ {\end{spec}}
+
+\newcommand \needsmodules [1]
+ {\item[\needs] \ide{\(#1\)}}
+
+\newcommand \nobody [1]
+ {\item[\ide{#1.}]\ }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TABS:
+
+\newlength \tablength 
+\setlength \tablength {\indentlength}
+
+\def \nulltab #1&#2&{#1#2 \ignorespaces}
+\newcommand \tab {?}
+\newcommand \nulltabset %	
+ {\let\tab=\nulltab	% overwritten by \tabset
+  \setlength \tablength {\indentlength}}
+
+\nulltabset
+
+\newcommand \tabset {?}
+\def \tabset #1&#2&{%	LHS &REL& 
+  \let\tab=\normaltab
+  \let\==\tabindent
+  \settowidth{\tablength}{{\confont #1#2 }}\ignorespaces}
+
+\def \normaltab #1&#2&{%	LHS &REL&
+  \savebox{\tempbox}{#1#2 }%
+  \ifdim \wd\tempbox>\tablength 
+    \@warning{\protect\tab: wider than argument of \protect\tabset}\fi
+  \makebox[\tablength][l]{#1\hfill#2 }\linebreak[1]\ignorespaces}
+
+\newcommand \tabindent %
+ {\strut\\*\strut\hskip\itemindent\hskip\tablength\ignorespaces}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SPECIFICATION SECTIONS
+
+\@ifundefined{section}{}{
+
+\newcommand \sectionlevel [1]%	{0..6}
+ {\secdef{\@sectionlevel{#1}}{\@@sectionlevel{#1}}}
+
+\newcommand \rulesectionlevel [1]%	{0..6}
+ {\secdef{\@rulesectionlevel{#1}}{\@@rulesectionlevel{#1}}}
+
+\def \@rulesectionlevel#1[#2]#3%
+ {\@sectionlevel#1[#2]{#3\hskip 1em\hrulefill}}
+
+\def \@sectionlevel#1[#2]#3%
+ {\ifcase#1 % deliberate space!
+    \chapter[#2]{#3}\or
+    \pagebreak[3]\section[#2]{#3}\or
+    \pagebreak[3]\subsection[#2]{#3}\or
+    \pagebreak[2]\subsubsection[#2]{#3}\or
+    \pagebreak[2]\subsubsubsection[#2]{#3}\or
+    \pagebreak[1]\subsubsubsubsection[#2]{#3}\or
+    \pagebreak[1]\subsubsubsubsubsection[#2]{#3}\else
+    \@toodeep\fi}
+
+\def \@@rulesectionlevel#1#2%
+ {\@@sectionlevel#1{#2\hskip 1em\hrulefill}}
+
+\def \@@sectionlevel#1#2%
+ {\ifcase#1 % deliberate space!
+    \chapter*{#2}\or
+    \pagebreak[3]\section*{#2}\or
+    \pagebreak[3]\subsection*{#2}\or
+    \pagebreak[2]\subsubsection*{#2}\or
+    \pagebreak[2]\subsubsubsection*{#2}\or
+    \pagebreak[1]\subsubsubsubsection*{#2}\or
+    \pagebreak[1]\subsubsubsubsubsection*{#2}\else
+    \@toodeep\fi}
+
+\newcounter {subsubsubsection}[subsubsection]
+\newcounter {subsubsubsubsection}[subsubsubsection]
+\newcounter {subsubsubsubsubsection}[subsubsubsubsection]
+
+\def \subsubsubsection 
+ {\@startsection{subsubsubsection}{3}{\z@}%
+   {-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def \subsubsubsubsection 
+ {\@startsection{subsubsubsubsection}{4}{\z@}%
+   {-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def \subsubsubsubsubsection 
+ {\@startsection{subsubsubsubsubsection}{5}{\z@}%
+   {-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+
+\def \thesubsubsubsection  
+ {\thesubsubsection.\arabic{subsubsubsection}}
+\def \thesubsubsubsubsection 
+ {\thesubsubsubsection.\arabic{subsubsubsubsection}}
+\def \thesubsubsubsubsubsection 
+ {\thesubsubsubsubsection.\arabic{subsubsubsubsubsection}}
+
+\def \l@subsubsubsection{\@dottedtocline{3}{10em}{5em}}
+\def \l@subsubsubsubsection{\@dottedtocline{4}{12em}{5.9em}}
+\def \l@subsubsubsubsubsection{\@dottedtocline{5}{14em}{6.8em}}
+
+\def \subsubsubsectionmark #1{}
+\def \subsubsubsubsectionmark #1{}
+\def \subsubsubsubsubsectionmark #1{}
+
+}	% for \@ifundefined{section}{}{...}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% INSTITUTIONS, CATEGORIES: (FOR USE ONLY IN MATH!)
+
+\newcommand \cat [1]{{\bf #1}}
+\newcommand \opcat [1]{\cat{#1}^{op}}
+\newcommand \subcat [1]{{\scriptstyle\cat{#1}}}
+
+\newcommand \cod {\mathop{\con{cod}}}
+\newcommand \dom {\mathop{\con{dom}}}
+\newcommand \id {\mathop{\con{id}}\nolimits}
+\newcommand \Id {\mathop{\con{Id}}\nolimits}
+
+\newcommand \Inst [1]{\con{#1}} % \inst clashes with LLNCS style!
+\newcommand \HFO {\inst{HFO}}
+\newcommand \HHC {\inst{HHC}}
+\newcommand \UNI {\inst{UNI}}
+
+\newcommand \instdata [2]{\cat{#1}_{\scriptstyle#2}}
+
+\newcommand \Sign [1]{\instdata{Sign}{#1}}
+\newcommand \Mod [1]{\instdata{Mod}{#1}}
+\newcommand \Sen [1]{\instdata{Sen}{#1}}
+\newcommand \Sat [1]{\models_{#1}}
+
+\newcommand \Pair [1]{\langle#1\rangle}
+\newcommand \Theory [1]{\mathop{\con{Th}}(#1)}
+\newcommand \Closure [1]{#1^*}
+\newcommand \Sigden [1]{\mathop{\con{Sig}} (#1)}
+\newcommand \Modden [1]{\mathop{\con{Mod}} (#1)}
+
+% use |_ for ordinary reduct.
+\newcommand \Forget {\mathbin{\con !}}
+\newcommand \Free {\mathop{\cat F}}
+\newcommand \Symbol {{\it Symb}}
+\newcommand \Variable {{\it Var}}
+
+\newcommand \apply [2]%
+ {{\specifying#1}$(\!|${\specifying#2}$|\!)$}
+
+\newcommand \transit [1]%
+ {\ifmmode\stackrel{#1}{\longrightarrow}\else
+  $\stackrel{#1}{\longrightarrow}$\fi}
+
+\newcommand \observe [1]%% \footnotesize$\Longrightarrow$ doesn't work!
+ {\ifmmode\stackrel{#1}{\mathrel{\mbox{\normalsize$\Longrightarrow$}}}\else
+  $\stackrel{#1}{\mathrel{\mbox{\normalsize$\Longrightarrow$}}}$\fi}
+
+\newcommand \uncommittedtransit %
+ {\transit{.}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

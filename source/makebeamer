@@ -1,0 +1,10 @@
+#!/bin/bash
+cat introduction.tex | python ./tex2bmr.py > Beamer/introduction.tex
+cat syntax.tex | python ./tex2bmr.py > Beamer/syntax.tex
+cat cpp.tex  | python ./tex2bmr.py > Beamer/cpp.tex
+cat ruby.tex | python ./tex2bmr.py > Beamer/ruby.tex
+cat usingsml.tex | python ./tex2bmr.py > Beamer/usingsml.tex
+cat functional.tex | python ./tex2bmr.py > Beamer/functional.tex
+cat prolog.tex | python ./tex2bmr.py > Beamer/prolog.tex
+cat semantics.tex | python ./tex2bmr.py > Beamer/semantics.tex
+cat appendices.tex | python ./tex2bmr.py > Beamer/appendices.tex
