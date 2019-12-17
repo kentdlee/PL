@@ -15,9 +15,9 @@ Concepts covered in the text include syntax specification, lexical analysis, par
 
 This text uses and extends the JCoCo Virtual Machine. JCoCo is based on the Python Virtual Machine version 3.2. JCoCo, and its Python disassember, were written to illustrate assembly language programming on a virtual machine. The text both uses JCoCo so students can learn about assembly language programming, and extends JCoCo so students can learn about virtual machine implementations. The `JCoCo website <https://kentdlee.github.io/JCoCoPages>`_ describes the JCoCo virtual machine and the Github website http://github.com/kentdlee/JCoCo provides the source code for JCoCo.
 
-An older C++ version of the CoCo code is available at `https://kentdlee.github.io/CoCoPages <https://kentdlee.github.io/CoCoPages/>`_. 
+An older C++ version of the CoCo code is available at `https://kentdlee.github.io/CoCoPages <https://kentdlee.github.io/CoCoPages/>`_.
 
-In addition, this text uses CoCo as a target language for implementing a compiler of Standard ML. The code for this project is available on Github at http://github.com/kentdlee/MLComp. The text extends the MLComp compiler to compile a robust subset of Standard ML.
+In addition, this text uses JCoCo/CoCo as a target language for implementing a compiler of Standard ML. The code for this project is available on Github at http://github.com/kentdlee/MLComp. The text extends the MLComp compiler to compile a robust subset of Standard ML.
 
 The final chapter of this text covers type inference in Standard ML and provides the description and partial implementation of the Standard ML type inference system written in Prolog. This code is included in the MLComp Github project. The text extends the type checker to cover a more complete subset of the language.
 
